@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/splashFragment">
+
+    <fragment
+        android:id="@+id/splashFragment"
+        android:name="com.ilham.etumarketbybuyer.SplashFragment"
+        android:label="fragment_splash"
+        tools:layout="@layout/fragment_splash" >
+        <action
+            android:id="@+id/action_splashFragment_to_homeFragment2"
+            app:destination="@id/homeFragment2" />
+        <action
+            android:id="@+id/action_splashFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.ilham.etumarketbybuyer.LoginFragment"
+        android:label="fragment_login"
+        tools:layout="@layout/fragment_login" >
+        <action
+            android:id="@+id/action_loginFragment_to_resetPassFragment"
+            app:destination="@id/resetPassFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_registerFragment"
+            app:destination="@id/registerFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_homeFragment2"
+            app:destination="@id/homeFragment2" />
+        <action
+            android:id="@+id/action_loginFragment_to_userFragment"
+            app:destination="@id/userFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_changePassFragment"
+            app:destination="@id/changePassFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/homeFragment2"
+        android:name="com.ilham.etumarketbybuyer.HomeFragment"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment2_to_detailFragment"
+            app:destination="@id/detailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/cartFragment"
+        android:name="com.ilham.etumarketbybuyer.CartFragment"
+        android:label="fragment_cart"
+        tools:layout="@layout/fragment_cart" >
+        <action
+            android:id="@+id/action_cartFragment_to_homeFragment2"
+            app:destination="@id/homeFragment2" />
+        <action
+            android:id="@+id/action_cartFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_cartFragment_to_editCartFragment"
+            app:destination="@id/editCartFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/chatFragment2"
+        android:name="com.ilham.etumarketbybuyer.ChatFragment"
+        android:label="fragment_chat"
+        tools:layout="@layout/fragment_chat" />
+    <fragment
+        android:id="@+id/historyFragment2"
+        android:name="com.ilham.etumarketbybuyer.HistoryFragment"
+        android:label="fragment_history"
+        tools:layout="@layout/fragment_history" />
+    <fragment
+        android:id="@+id/profileFragment2"
+        android:name="com.ilham.etumarketbybuyer.ProfileFragment"
+        android:label="fragment_profile"
+        tools:layout="@layout/fragment_profile" >
+        <action
+            android:id="@+id/action_profileFragment2_to_homeFragment2"
+            app:destination="@id/homeFragment2" />
+        <action
+            android:id="@+id/action_profileFragment2_to_loginFragment"
+            app:destination="@id/loginFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/resetPassFragment"
+        android:name="com.ilham.etumarketbybuyer.ResetPassFragment"
+        android:label="fragment_reset_pass"
+        tools:layout="@layout/fragment_reset_pass" >
+        <action
+            android:id="@+id/action_resetPassFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/registerFragment"
+        android:name="com.ilham.etumarketbybuyer.RegisterFragment"
+        android:label="fragment_register"
+        tools:layout="@layout/fragment_register" >
+        <action
+            android:id="@+id/action_registerFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/userFragment"
+        android:name="com.ilham.etumarketbybuyer.UserFragment"
+        android:label="fragment_user"
+        tools:layout="@layout/fragment_user" >
+        <action
+            android:id="@+id/action_userFragment_to_profileFragment2"
+            app:destination="@id/profileFragment2" />
+        <action
+            android:id="@+id/action_userFragment_to_chatFragment2"
+            app:destination="@id/chatFragment2" />
+    </fragment>
+    <fragment
+        android:id="@+id/detailFragment"
+        android:name="com.ilham.etumarketbybuyer.DetailFragment"
+        android:label="fragment_detail"
+        tools:layout="@layout/fragment_detail" >
+        <action
+            android:id="@+id/action_detailFragment_to_cartFragment"
+            app:destination="@id/cartFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/pilihProdukFragment"
+        android:name="com.ilham.etumarketbybuyer.PilihProdukFragment"
+        android:label="fragment_pilih_produk"
+        tools:layout="@layout/fragment_pilih_produk" >
+        <action
+            android:id="@+id/action_pilihProdukFragment_to_homeFragment2"
+            app:destination="@id/homeFragment2" />
+    </fragment>
+    <fragment
+        android:id="@+id/changePassFragment"
+        android:name="com.ilham.etumarketbybuyer.ChangePassFragment"
+        android:label="fragment_change_pass"
+        tools:layout="@layout/fragment_change_pass" />
+    <fragment
+        android:id="@+id/editCartFragment"
+        android:name="com.ilham.etumarketbybuyer.EditCartFragment"
+        android:label="fragment_edit_cart"
+        tools:layout="@layout/fragment_edit_cart" >
+        <action
+            android:id="@+id/action_editCartFragment_to_cartFragment"
+            app:destination="@id/cartFragment" />
+    </fragment>
+    <activity
+        android:id="@+id/userActivity"
+        android:name="com.ilham.etumarketbybuyer.UserActivity"
+        android:label="activity_user"
+        tools:layout="@layout/activity_user" />
+</navigation>

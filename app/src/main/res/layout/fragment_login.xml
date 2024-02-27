@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".LoginFragment">
+
+<!--    <ImageView-->
+<!--        android:id="@+id/iv_back"-->
+<!--        android:layout_width="30dp"-->
+<!--        android:layout_height="30dp"-->
+<!--        android:layout_marginStart="20dp"-->
+<!--        android:layout_marginTop="30dp"-->
+<!--        android:src="@drawable/ic_fi_arrow_left"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent" />-->
+
+    <TextView
+        android:id="@+id/tv_header"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:fontFamily="@font/nunitoextrabold"
+        android:text="Selamat datang kembali"
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        android:layout_marginTop="30dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView7"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="8dp"
+        android:textSize="16sp"
+        android:fontFamily="@font/nunitosemibold"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:text="Kami senang melihat anda kembali. Anda dapat masuk terlebih dahulu untuk melihat barang yang anda sukai."
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_header" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_email"
+        style="@style/LoginTextInputLayoutStyle"
+        android:theme="@style/LoginTextInputLayoutStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:hint="Email"
+        android:backgroundTint="@color/teal_200"
+        app:boxCornerRadiusBottomEnd="10dp"
+        app:boxCornerRadiusBottomStart="10dp"
+        app:boxCornerRadiusTopEnd="10dp"
+        app:boxCornerRadiusTopStart="10dp"
+        app:errorEnabled="true"
+        android:layout_marginTop="30dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView7">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_emailLogin"
+            android:fontFamily="@font/nunitosemibold"
+            android:textSize="16sp"
+            android:layout_width="match_parent"
+            android:layout_height="55dp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!--    <EditText-->
+    <!--        android:id="@+id/et_emailLogin"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="55dp"-->
+    <!--        android:layout_marginStart="20dp"-->
+    <!--        android:layout_marginEnd="20dp"-->
+    <!--        android:hint="Email"-->
+    <!--        android:paddingStart="20dp"-->
+    <!--        android:textSize="16sp"-->
+    <!--        android:fontFamily="@font/nunitosemibold"-->
+    <!--        android:background="@drawable/bg_edittext"-->
+    <!--        android:layout_marginTop="30dp"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toBottomOf="@+id/textView7" />-->
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_password"
+        style="@style/LoginTextInputLayoutStyle"
+        android:theme="@style/LoginTextInputLayoutStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:hint="Password"
+        app:hintTextColor="@color/color_main"
+        app:boxCornerRadiusBottomEnd="10dp"
+        app:boxCornerRadiusBottomStart="10dp"
+        app:boxCornerRadiusTopEnd="10dp"
+        app:boxCornerRadiusTopStart="10dp"
+        app:errorEnabled="true"
+        app:endIconMode="password_toggle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/til_email">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_passwordLogin"
+            android:fontFamily="@font/nunitosemibold"
+            android:textSize="16sp"
+            android:inputType="textPassword"
+            android:layout_width="match_parent"
+            android:layout_height="55dp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!--    <EditText-->
+    <!--        android:id="@+id/et_passwordLogin"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="55dp"-->
+    <!--        android:layout_marginStart="20dp"-->
+    <!--        android:layout_marginEnd="20dp"-->
+    <!--        android:background="@drawable/bg_edittext"-->
+    <!--        android:hint="Password"-->
+    <!--        android:paddingStart="20dp"-->
+    <!--        android:textSize="16sp"-->
+    <!--        android:layout_marginTop="10dp"-->
+    <!--        android:fontFamily="@font/nunitosemibold"-->
+    <!--        android:inputType="textPassword"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toBottomOf="@+id/til_login" />-->
+
+    <TextView
+        android:id="@+id/lupa_password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:text="Ganti password?"
+        android:textSize="16sp"
+        android:fontFamily="@font/nunitosemibold"
+        android:textColor="@color/color_main"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/til_password" />
+
+      <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_masukLogin"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        app:cornerRadius="10dp"
+        android:backgroundTint="@color/teal_200"
+        android:fontFamily="@font/nunitobold"
+        android:text="Masuk"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="22sp"
+        android:layout_marginTop="30dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lupa_password" />
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Belum punya akun?"
+            android:layout_marginEnd="8dp"
+            android:textSize="16sp"
+            android:fontFamily="@font/nunitosemibold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/tv_goToRegister"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_goToRegister"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Daftar di sini"
+            android:textColor="@color/color_main"
+            android:textFontWeight="700"
+            android:textSize="16sp"
+            android:fontFamily="@font/nunitosemibold"
+            app:layout_constraintBottom_toBottomOf="@+id/textView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/textView" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
