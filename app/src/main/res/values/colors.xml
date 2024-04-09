@@ -30,6 +30,8 @@
     <color name="textAd">#9B9B9B</color>
     <color name="cardColor">#8A31334A</color>
 
+    <color name="blue">#21C2F3</color>
+
     <color name="g_gray500">#969899</color>
 
     <color name = "shimmer_placeholder">#dddddd</color>

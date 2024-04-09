@@ -81,48 +81,38 @@ class LoginFragment : Fragment() {
         val email = binding.etEmailLogin.text.toString()
         val password = binding.etPasswordLogin.text.toString()
 
-        firebaseAuth!!.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener {
-                if (it.isSuccessful) {
+        firebaseAuth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    // Firebase authentication successful
                     binding.etEmailLogin.setText("")
                     binding.etPasswordLogin.setText("")
-//                    findNavController().navigate(R.id.action_loginFragment_to_homeFragment)
+
+                    // Now, check your custom authentication logic
+                    if (email.isNotEmpty() && password.isNotEmpty()) {
+                        userVm.responselogin.observe(viewLifecycleOwner, Observer { response ->
+                            if (response.message == "Success") {
+                                findNavController().navigate(R.id.action_loginFragment_to_homeFragment2)
+                                Toast.makeText(context, "User Berhasil Login", Toast.LENGTH_SHORT).show()
+
+                                // Save token to SharedPreferences
+                                val sharedPref = pref.edit()
+                                sharedPref.putString("token", response.token)
+                                sharedPref.apply()
+                            } else {
+                                Toast.makeText(context, "Login Failed", Toast.LENGTH_SHORT).show()
+                            }
+                        })
+
+                        userVm.postlogin(LoginBody(email, password))
+                    } else {
+                        Toast.makeText(context, "Login Failed", Toast.LENGTH_SHORT).show()
+                    }
                 } else {
-                    Toast.makeText(context,
-                        "email or password invalid",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    // Firebase authentication failed
+                    Toast.makeText(context, "Firebase Authentication Failed", Toast.LENGTH_SHORT).show()
                 }
             }
-
-
-
-        if (email.isNotEmpty() && password.isNotEmpty()){
-
-            userVm.responselogin.observe(viewLifecycleOwner, Observer {
-                if(it.message == "Success"){
-                    findNavController().navigate(R.id.action_loginFragment_to_homeFragment2)
-//                    navigationBundlingSf()
-                    Toast.makeText(context, "User Berhasil Login", Toast.LENGTH_SHORT).show()
-
-
-                }else{
-                    Toast.makeText(context, "Login Failed", Toast.LENGTH_SHORT).show()
-                }
-                val sharedPref = pref.edit()
-                sharedPref.putString("token", it.token)
-                sharedPref.apply()
-
-            })
-
-
-            userVm.postlogin(LoginBody(email, password))
-
-
-
-        } else{
-            Toast.makeText(context, "Login Failed", Toast.LENGTH_SHORT).show()
-        }
 
 
 

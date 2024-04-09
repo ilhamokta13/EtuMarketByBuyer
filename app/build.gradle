@@ -112,9 +112,19 @@ dependencies {
     //Maps
     implementation 'com.google.android.gms:play-services-maps:18.0.2'
 
+    // required to avoid crash on Android 12 API 31
+    implementation 'androidx.work:work-runtime-ktx:2.7.1'
+
+    implementation 'com.squareup.picasso:picasso:2.8'
+
 
     // FCM
     implementation 'com.google.firebase:firebase-messaging:20.1.7'
+
+    // payment gateway midtrans
+    implementation 'com.midtrans:uikit:2.0.0-SANDBOX'
+    implementation 'com.midtrans:uikit:2.0.0'
+
 
 
 

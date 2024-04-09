@@ -104,7 +104,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:lineHeight="20dp"
-                        android:text="COD"
+                        android:text="Rincian"
                         android:textColor="@color/neutral_05"
                         tools:ignore="UnusedAttribute" />
 
@@ -119,7 +119,7 @@
                         tools:ignore="UnusedAttribute" />
 
                     <TextView
-                        android:id="@+id/tvJamBerangkat"
+                        android:id="@+id/tvJenisProduk"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
@@ -163,16 +163,16 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/TanggalPembelian"
+                        android:id="@+id/Description"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:lineHeight="20dp"
-                        android:text="Tanggal Pembelian : "
+                        android:text="Description : "
                         android:textColor="@color/neutral_05"
                         tools:ignore="UnusedAttribute" />
 
                     <TextView
-                        android:id="@+id/tvKedatangan"
+                        android:id="@+id/tvNameProduk"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:lineHeight="20dp"
@@ -181,7 +181,16 @@
                         tools:ignore="UnusedAttribute" />
 
                     <TextView
-                        android:id="@+id/tvJamKedatangan"
+                        android:id="@+id/cvJumlahCart"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:lineHeight="20dp"
+                        android:text="Jumlah Cart :"
+                        android:textColor="@color/neutral_05"
+                        tools:ignore="UnusedAttribute" />
+
+                    <TextView
+                        android:id="@+id/tvJumlahCart"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
@@ -224,12 +233,12 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:lineHeight="18dp"
-                        android:text="Booking Code : "
+                        android:text="Harga: "
                         android:textColor="@color/neutral_05"
                         tools:ignore="UnusedAttribute" />
 
                     <TextView
-                        android:id="@+id/tvBooking"
+                        android:id="@+id/tvHarga"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:lineHeight="18dp"
@@ -257,7 +266,7 @@
                         android:textColor="@color/neutral_05"/>
 
                     <TextView
-                        android:id="@+id/tvClass"
+                        android:id="@+id/tvName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:lineHeight="18dp"
@@ -311,205 +320,24 @@
         android:background="@color/neutral_04"
         app:layout_constraintTop_toTopOf="parent">
 
-        <RelativeLayout
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/form_titlelocation"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <ImageView
-                android:id="@+id/btnBack2"
-                android:layout_width="11.15dp"
-                android:layout_height="6.55dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:layout_marginStart="26dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="15dp"
-                android:layout_marginBottom="8dp"
-                android:src="@drawable/victor1"
-                tools:ignore="ContentDescription" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:textColor="@color/white"
-                android:lineHeight="20dp"
-                android:text="Gopay"
-                tools:ignore="UnusedAttribute" />
-        </RelativeLayout>
+            <AutoCompleteTextView
+                android:id="@+id/uploadCategory"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:inputType="none"
+                tools:ignore="SpeakableTextPresentCheck" />
+        </com.google.android.material.textfield.TextInputLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appBar2"
-        android:background="@color/teal_200"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:layout_marginStart="17dp"
-        android:layout_marginEnd="17dp"
-        android:layout_below="@id/appBar"
-        app:layout_constraintTop_toTopOf="parent">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
 
-            <ImageView
-                android:id="@+id/btnBack3"
-                android:src="@drawable/victor1"
-                android:layout_width="11.15dp"
-                android:layout_height="6.55dp"
-                android:layout_marginStart="26dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="15dp"
-                android:layout_marginBottom="8dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                tools:ignore="ContentDescription" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:textColor="@color/white"
-                android:lineHeight="20dp"
-                android:text="Credit Card"
-                tools:ignore="UnusedAttribute" />
-
-        </RelativeLayout>
-    </com.google.android.material.appbar.AppBarLayout>
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardview2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/appBar2"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        app:cardCornerRadius="8dp"
-        app:cardElevation="1dp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/tvCard"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:lineHeight="20dp"
-                android:text="Card number"
-                android:textColor="@color/neutral_05"
-                tools:ignore="UnusedAttribute" />
-
-            <EditText
-                android:id="@+id/etNoCard"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:ems="10"
-                android:maxLines="1"
-                android:inputType="text"
-                android:hint="4480 0000 0000 0000"
-                tools:ignore="Autofill,TouchTargetSizeCheck" />
-
-            <TextView
-                android:id="@+id/tvCardName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:lineHeight="20dp"
-                android:text="Card Holder Name"
-                android:textColor="@color/neutral_05"
-                tools:ignore="UnusedAttribute" />
-
-            <EditText
-                android:id="@+id/etName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:ems="10"
-                android:hint="John Doe"
-                tools:ignore="Autofill,TextFields,TouchTargetSizeCheck" />
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <LinearLayout
-                    android:id="@+id/layoutcvv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/tvCvv"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:lineHeight="20dp"
-                        android:text="CVV"
-                        android:textColor="@color/neutral_05"
-                        tools:ignore="UnusedAttribute" />
-
-                    <EditText
-                        android:id="@+id/etCvv"
-                        android:layout_width="60dp"
-                        android:layout_height="wrap_content"
-                        android:maxLines="1"
-                        android:ems="10"
-                        android:hint="000"
-                        tools:ignore="Autofill,TextFields,TouchTargetSizeCheck" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/nyoba"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_toEndOf="@id/layoutcvv"
-                    android:layout_alignParentEnd="true"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_gravity="end"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/tvExpDate"
-                        android:layout_marginStart="20dp"
-                        android:lineHeight="20dp"
-                        android:text="Expiry date"
-                        android:textColor="@color/neutral_05"
-                        tools:ignore="UnusedAttribute" />
-
-                    <EditText
-                        android:id="@+id/etExpdate"
-                        android:layout_width="60dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="end"
-                        android:maxLines="1"
-                        android:layout_marginStart="20dp"
-                        android:ems="10"
-                        android:hint="16/20"
-                        tools:ignore="Autofill,TextFields,TouchTargetSizeCheck" />
-
-                </LinearLayout>
-
-            </RelativeLayout>
-
-        </LinearLayout>
-
-    </androidx.cardview.widget.CardView>
 
     <Button
         android:id="@+id/btnbayar"
@@ -520,13 +348,14 @@
         android:layout_marginStart="15dp"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="15dp"
+        android:layout_marginBottom="-2dp"
         android:background="@drawable/button_radius"
         android:padding="12dp"
         android:text="Bayar"
         app:backgroundTint="@null"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent" />
 
 
 </RelativeLayout>

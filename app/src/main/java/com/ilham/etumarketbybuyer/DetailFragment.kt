@@ -20,9 +20,10 @@ import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.DrawableCompat
-import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.Glide
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -31,8 +32,9 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.ilham.etumarketbybuyer.databinding.FragmentDetailBinding
 import com.ilham.etumarketbybuyer.model.cart.DataAddCart
-import com.ilham.etumarketbybuyer.model.product.allproduct.DataAllProduct
+import com.ilham.etumarketbybuyer.model.transaksi.PostTransaction
 import com.ilham.etumarketbybuyer.viewmodel.CartViewModel
+import com.ilham.etumarketbybuyer.viewmodel.PaymentViewModel
 import com.ilham.etumarketbybuyer.viewmodel.ProductViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -43,6 +45,7 @@ class DetailFragment : Fragment(), OnMapReadyCallback {
     lateinit var pref : SharedPreferences
     lateinit var productVm : ProductViewModel
     private lateinit var cartViewModel: CartViewModel
+    lateinit var paymentVm : PaymentViewModel
     private lateinit var idProduct: String
     private lateinit var idCart: String
 
@@ -61,13 +64,14 @@ class DetailFragment : Fragment(), OnMapReadyCallback {
         pref = requireActivity().getSharedPreferences("Berhasil", Context.MODE_PRIVATE)!!
         productVm = ViewModelProvider(this).get(ProductViewModel::class.java)
         cartViewModel = ViewModelProvider(this)[CartViewModel::class.java]
+        paymentVm = ViewModelProvider(this).get(PaymentViewModel::class.java)
 
-        val getData = arguments?.getSerializable("detail") as DataAllProduct
-//        val token = pref.getString("token", "").toString()
+        val getData = arguments?.getString("detail")
+        val token = pref.getString("token", "").toString()
 //        val getId = pref.getString("id", " ")
-        idProduct = getData.id
+//        idProduct = getData.id
 
-        productVm.getproductperid(idProduct)
+        productVm.getproductperid(getData!!)
         observeDetailProduct()
 
         val jmlcart = cartViewModel.getCart()
@@ -78,11 +82,79 @@ class DetailFragment : Fragment(), OnMapReadyCallback {
 
 
 
+
+
+
 //        cartViewModel.saveIdCart(idProduct)
 
 
         val mapFragment = childFragmentManager.findFragmentById(R.id.layout_maps) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
+        binding.btnBeliSekarang.setOnClickListener {
+
+
+            cartViewModel.dataCartUser.observe(viewLifecycleOwner, Observer { cartItems ->
+
+                if (cartItems.isNullOrEmpty()) {
+                    // Handle the case when the cart is empty
+                    // For example, you can show a message or hide the price view
+                    // You might want to update other UI elements accordingly
+                } else {
+                    var totalPrice = 0.0
+                    val listOfIds = mutableListOf<String>()
+                    val listOfQuantities = mutableListOf<Int>()
+
+                    for (product in cartItems) {
+                        val idProductCart = product.productID.id
+                        val productName = product.productID.nameProduct
+                        val quantity = product.quantity
+                        val price = product.productID.price
+                        val keseluruhanharga = quantity * price.toDouble()
+                        totalPrice += keseluruhanharga
+                        listOfIds.add(idProductCart)
+                        listOfQuantities.add(quantity)
+
+                    }
+
+
+                    val dataCart = PostTransaction(listOfIds, listOfQuantities, totalPrice.toInt())
+                    val token = pref.getString("token", "").toString()
+
+                    paymentVm.postpayment(token, dataCart)
+                }
+
+
+            })
+            paymentVm.midtransResponse.observe(viewLifecycleOwner){
+                if (it.message == "Transaksi berhasil dibuat") {
+
+                    val tokenmidtrans = it.midtransResponse.token
+                    val redirectUrl = it.midtransResponse.redirectUrl
+
+
+                    Log.d("Payment Midtrans", "Midtrans :$tokenmidtrans")
+                    val redirecturl = it.midtransResponse.redirectUrl
+
+                    // Cetak log atau tampilkan toast jika perlu
+                    Log.d("Payment Redirect", "Redirect URL: $redirectUrl")
+
+                    // Buka redirect URL
+                    openRedirectUrl(redirectUrl)
+
+
+
+                } else {
+                    Toast.makeText(context, "Response Failed", Toast.LENGTH_SHORT).show()
+                }
+
+            }
+
+
+
+        }
+
+
 
 
 
@@ -101,6 +173,7 @@ class DetailFragment : Fragment(), OnMapReadyCallback {
                     binding.tvDescription.text = detailproduct.data.description
                     binding.tvCategory.text = detailproduct.data.category
                     binding.tvRelease.text = detailproduct.data.releaseDate
+
 
 
                         val lon = detailproduct.data.longitude
@@ -126,11 +199,77 @@ class DetailFragment : Fragment(), OnMapReadyCallback {
                         .load("https://7895jr9m-3000.asse.devtunnels.ms/uploads/${detailproduct.data.image}")
                         .into(binding.ivCartimagedetail)
 
+                    val shopName = detailproduct.data.sellerID.shopName
+                    getitemshop(shopName)
+
+                    // Tombol Bayar Sekarang
+                    binding.btnBeliSekarang.setOnClickListener {
+                        cartViewModel.dataCartUser.observe(viewLifecycleOwner, Observer { cartItems ->
+
+                            if (cartItems.isNullOrEmpty()) {
+                                // Handle the case when the cart is empty
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Keranjang belanja kosong",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            } else {
+                                var totalPrice = 0.0
+                                val listOfIds = mutableListOf<String>()
+                                val listOfQuantities = mutableListOf<Int>()
+
+                                for (product in cartItems) {
+                                    val idProductCart = product.productID.id
+                                    val productName = product.productID.nameProduct
+                                    val quantity = product.quantity
+                                    val price = product.productID.price
+                                    val keseluruhanharga = quantity * price.toDouble()
+                                    totalPrice += keseluruhanharga
+                                    listOfIds.add(idProductCart)
+                                    listOfQuantities.add(quantity)
+                                }
+
+                                val dataCart =
+                                    PostTransaction(listOfIds, listOfQuantities, totalPrice.toInt())
+                                val token = pref.getString("token", "").toString()
+
+                                paymentVm.postpayment(token, dataCart)
+                            }
+                        })
+
+                        paymentVm.midtransResponse.observe(viewLifecycleOwner){
+                            if (it.message == "Transaksi berhasil dibuat") {
+
+                                val tokenmidtrans = it.midtransResponse.token
+                                val redirectUrl = it.midtransResponse.redirectUrl
+
+
+                                Log.d("Payment Midtrans", "Midtrans :$tokenmidtrans")
+                                val redirecturl = it.midtransResponse.redirectUrl
+
+                                // Cetak log atau tampilkan toast jika perlu
+                                Log.d("Payment Redirect", "Redirect URL: $redirectUrl")
+
+                                // Buka redirect URL
+                                openRedirectUrl(redirectUrl)
+
+
+
+                            } else {
+                                Toast.makeText(context, "Response Failed", Toast.LENGTH_SHORT).show()
+                            }
+
+                        }
+                    }
+
+
 
 
                 }
 
             }
+
+
 
 
 
@@ -158,8 +297,8 @@ class DetailFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun addToCart() {
-        val getData = arguments?.getSerializable("detail") as DataAllProduct
-        idProduct = getData.id
+        val getData = arguments?.getString("detail")
+//        idProduct = getData.id
 
         val jmlcart = cartViewModel.getCart()
 
@@ -167,7 +306,7 @@ class DetailFragment : Fragment(), OnMapReadyCallback {
 
         binding.tvJumlahCart.text = belanja.toString()
 
-        val dataCart = DataAddCart(listOf(idProduct), listOf(belanja))
+        val dataCart = DataAddCart(listOf(getData.toString()), listOf(belanja))
         val token = pref.getString("token", "").toString()
         cartViewModel.postCart(token,dataCart)
 
@@ -262,6 +401,27 @@ class DetailFragment : Fragment(), OnMapReadyCallback {
         } else {
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }
+    }
+
+    fun getitemshop(search: String){
+        productVm.getproductpershop(search)
+        productVm.datapershop.observe(viewLifecycleOwner){
+            val layoutManager = GridLayoutManager(context,2)
+            binding.rvListDetail.layoutManager = layoutManager
+            if (it!= null) {
+                binding.rvListDetail.adapter = ShopAdapter(it)
+            }
+
+        }
+    }
+
+    private fun openRedirectUrl(redirectUrl: String) {
+        val bundle = Bundle()
+
+        bundle.putString("URL",redirectUrl).apply {
+            findNavController().navigate(R.id.action_detailFragment_to_webViewFragment,bundle)
+        }
+
     }
 }
 

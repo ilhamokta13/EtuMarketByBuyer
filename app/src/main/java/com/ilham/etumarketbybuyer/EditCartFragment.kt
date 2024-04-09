@@ -31,7 +31,6 @@ import com.google.android.gms.maps.model.*
 import com.ilham.etumarketbybuyer.databinding.FragmentEditCartBinding
 import com.ilham.etumarketbybuyer.model.cart.DataAddCart
 import com.ilham.etumarketbybuyer.model.cart.usercart.Product
-import com.ilham.etumarketbybuyer.model.product.allproduct.DataAllProduct
 import com.ilham.etumarketbybuyer.viewmodel.CartViewModel
 import com.ilham.etumarketbybuyer.viewmodel.ProductViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -157,7 +156,7 @@ class EditCartFragment : Fragment(), OnMapReadyCallback {
 
         val dataCart = DataAddCart(listOf(idProduct), listOf(belanja))
         val token = pref.getString("token", "").toString()
-        cartViewModel.updatecart(token,dataCart)
+//        cartViewModel.updatecart(token,dataCart)
 
 
 

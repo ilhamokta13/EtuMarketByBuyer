@@ -15,6 +15,8 @@ data class SellerID(
     val role: String,
     @SerializedName("telp")
     val telp: String,
+    @SerializedName("shopName")
+    val shopName : String,
     @SerializedName("__v")
     val v: Int
 )

@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
     android:paddingTop="10dp"
     android:id="@+id/layoutUser"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:layout_height="wrap_content">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/userImage"
             android:layout_width="30dp"
             android:layout_height="30dp"
@@ -25,16 +24,21 @@
             android:id="@+id/tvMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/gilroy_light"
+            android:text="Farhan"
+            android:background="@drawable/item_left_side_background"
             android:padding="5dp"
             android:layout_marginTop="5dp"
-            android:background="@drawable/item_left_side_background"
             android:textSize="16sp"
             tools:text="farhan" />
 
-
+        <ImageView
+            android:id="@+id/imgMessage"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_marginStart="5dp"
+            android:scaleType="fitXY"
+            android:visibility="gone" />
 
     </LinearLayout>
-
 
 </LinearLayout>

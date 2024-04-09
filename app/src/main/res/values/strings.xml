@@ -16,4 +16,17 @@
     <string name="btn_login">Login</string>
     <string name="label_sign_in">Sign In</string>
     <string name="type_message">Type Message</string>
+
+    <string-array name="MenuPembayaran">
+        <item>Ovo</item>
+        <item>LinkAja</item>
+        <item>Qris</item>
+
+    </string-array>
+
+    <string-array name="Role">
+        <item>Seller</item>
+        <item>Customer</item>
+
+    </string-array>
 </resources>

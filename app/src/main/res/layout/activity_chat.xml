@@ -45,10 +45,36 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/chatRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:layout_above="@id/r1"
         android:layout_below="@id/l1"
         tools:listitem="@layout/item_user" />
+
+    <!-- Layout untuk menampilkan preview gambar sebelum dikirim -->
+    <LinearLayout
+        android:id="@+id/layoutImagePreview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/r1"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/imgPreview"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="5dp"
+            android:src="@drawable/ic_launcher_background" />
+
+        <ImageButton
+            android:id="@+id/btnRemoveImage"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="10dp"
+            android:src="@drawable/ic_baseline_delete_24" />
+    </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/r1"
@@ -61,6 +87,14 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/btnSendImage"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_baseline_image_24"
+                android:layout_marginEnd="10dp" />
+
 
             <EditText
                 android:id="@+id/etMessage"
@@ -81,11 +115,6 @@
                 android:layout_height="40dp"
                 android:textColor="@color/colorAccent"
                 android:text="@string/btn_sign_up"/>
-
         </LinearLayout>
-
-
     </RelativeLayout>
-
-
 </RelativeLayout>

@@ -61,6 +61,15 @@
         <action
             android:id="@+id/action_cartFragment_to_editCartFragment"
             app:destination="@id/editCartFragment" />
+        <action
+            android:id="@+id/action_cartFragment_to_paymentFragment"
+            app:destination="@id/paymentFragment" />
+        <action
+            android:id="@+id/action_cartFragment_to_paymentMidtrans"
+            app:destination="@id/paymentMidtrans" />
+        <action
+            android:id="@+id/action_cartFragment_to_webViewFragment"
+            app:destination="@id/webViewFragment" />
     </fragment>
     <fragment
         android:id="@+id/chatFragment2"
@@ -71,7 +80,17 @@
         android:id="@+id/historyFragment2"
         android:name="com.ilham.etumarketbybuyer.HistoryFragment"
         android:label="fragment_history"
-        tools:layout="@layout/fragment_history" />
+        tools:layout="@layout/fragment_history" >
+        <action
+            android:id="@+id/action_historyFragment2_to_loginFragment"
+            app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_historyFragment2_to_homeFragment2"
+            app:destination="@id/homeFragment2" />
+        <action
+            android:id="@+id/action_historyFragment2_to_detailHistoryFragment"
+            app:destination="@id/detailHistoryFragment" />
+    </fragment>
     <fragment
         android:id="@+id/profileFragment2"
         android:name="com.ilham.etumarketbybuyer.ProfileFragment"
@@ -122,6 +141,9 @@
         <action
             android:id="@+id/action_detailFragment_to_cartFragment"
             app:destination="@id/cartFragment" />
+        <action
+            android:id="@+id/action_detailFragment_to_webViewFragment"
+            app:destination="@id/webViewFragment" />
     </fragment>
     <fragment
         android:id="@+id/pilihProdukFragment"
@@ -151,4 +173,30 @@
         android:name="com.ilham.etumarketbybuyer.UserActivity"
         android:label="activity_user"
         tools:layout="@layout/activity_user" />
+    <fragment
+        android:id="@+id/paymentFragment"
+        android:name="com.ilham.etumarketbybuyer.PaymentFragment"
+        android:label="fragment_payment"
+        tools:layout="@layout/fragment_payment" >
+        <action
+            android:id="@+id/action_paymentFragment_to_paymentMidtrans"
+            app:destination="@id/paymentMidtrans" />
+        <action
+            android:id="@+id/action_paymentFragment_to_webViewFragment"
+            app:destination="@id/webViewFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/paymentMidtrans"
+        android:name="com.ilham.etumarketbybuyer.midtrans.PaymentMidtransFragment"
+        android:label="fragment_payment_midtrans"
+        tools:layout="@layout/fragment_payment_midtrans" />
+    <fragment
+        android:id="@+id/webViewFragment"
+        android:name="com.ilham.etumarketbybuyer.midtrans.WebViewFragment"
+        android:label="WebViewFragment" />
+    <fragment
+        android:id="@+id/detailHistoryFragment"
+        android:name="com.ilham.etumarketbybuyer.DetailHistoryFragment"
+        android:label="fragment_detail_history"
+        tools:layout="@layout/fragment_detail_history" />
 </navigation>

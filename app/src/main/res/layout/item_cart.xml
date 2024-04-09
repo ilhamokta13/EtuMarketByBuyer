@@ -10,7 +10,7 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/CartDetail"
         android:layout_width="match_parent"
-        android:layout_height="120dp"
+        android:layout_height="150dp"
         app:cardCornerRadius="10dp"
         app:cardElevation="0dp"
         app:cardBackgroundColor="@color/teal_200"
@@ -21,7 +21,7 @@
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
             <ImageView
                 android:id="@+id/cartImage"
@@ -42,11 +42,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Name"
-                    android:textSize="18sp"
+                    android:textSize="14sp"
                     android:maxLines="1"
                     android:textColor="@color/mainText"
                     android:fontFamily="@font/metropolis_semibold"
                     android:maxEms="12"/>
+
+
 
                 <TextView
                     android:id="@+id/cartPrice"
@@ -73,22 +75,72 @@
                     android:textSize="14sp"
                     android:textColor="@color/black"
                     android:fontFamily="@font/metropolis_semibold" />
-                <TextView
-                    android:id="@+id/btnEditJumlahCart"
+
+<!--                <TextView-->
+<!--                    android:id="@+id/btnEditJumlahCart"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_below="@+id/tvJumlahProductCart"-->
+<!--                    android:layout_toRightOf="@+id/imgProductCart"-->
+<!--                    android:text="Ubah Jumlah Cart?"-->
+<!--                    android:textColor="@color/black" />-->
+
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/tvJumlahProductCart"
-                    android:layout_toRightOf="@+id/imgProductCart"
-                    android:text="Ubah Jumlah Cart?"
-                    android:textColor="@color/black" />
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+
+                    <RelativeLayout
+                        android:layout_width="130dp"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp">
+
+                        <ImageView
+                            android:id="@+id/decJumlahCart"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:background="@drawable/background_border_primary_purple"
+                            android:layout_marginLeft="5dp"
+                            app:srcCompat="@drawable/ic_baseline_minimize_24" />
+
+                        <TextView
+                            android:id="@+id/tvJumlahCart"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginRight="5dp"
+                            android:ellipsize="marquee"
+                            android:text="1"
+                            android:textColor="@color/colorPrimary"
+                            android:textStyle="bold" />
+
+                        <ImageView
+                            android:id="@+id/addJumlahCart"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:layout_marginRight="5dp"
+                            android:background="@drawable/background_border_primary_purple"
+                            app:srcCompat="@drawable/ic_baseline_add_24" />
+
+                    </RelativeLayout>
+
+                </LinearLayout>
+
 
 
             </LinearLayout>
 
 
-
         </LinearLayout>
-
 
 
     </androidx.cardview.widget.CardView>

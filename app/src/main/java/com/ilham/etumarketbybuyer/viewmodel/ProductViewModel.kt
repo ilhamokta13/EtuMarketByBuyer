@@ -8,6 +8,8 @@ import com.ilham.etumarketbybuyer.model.product.allproduct.AllProductResponse
 import com.ilham.etumarketbybuyer.model.product.allproduct.DataAllProduct
 import com.ilham.etumarketbybuyer.model.product.productperid.DataPerId
 import com.ilham.etumarketbybuyer.model.product.productperid.GetProductPerId
+import com.ilham.etumarketbybuyer.model.product.productshopname.DataPerShop
+import com.ilham.etumarketbybuyer.model.product.productshopname.GetProductspershop
 import com.ilham.etumarketbybuyer.network.ApiService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import retrofit2.Call
@@ -19,8 +21,8 @@ import javax.inject.Inject
 class ProductViewModel  @Inject constructor(private val api : ApiService) : ViewModel() {
     private val liveDataProduct : MutableLiveData<List<DataAllProduct>> = MutableLiveData()
     val dataProduct : LiveData<List<DataAllProduct>> = liveDataProduct
-    fun getAllproduct(){
-        api.getAllProduct().enqueue(object : Callback<AllProductResponse> {
+    fun getAllproduct(search : String){
+        api.getAllProduct(search).enqueue(object : Callback<AllProductResponse> {
             override fun onResponse(
                 call: Call<AllProductResponse>,
                 response: Response<AllProductResponse>
@@ -64,6 +66,30 @@ class ProductViewModel  @Inject constructor(private val api : ApiService) : View
 
         })
 
+    }
+
+    private val livedatapershop : MutableLiveData<List<DataPerShop>> = MutableLiveData()
+    val datapershop : LiveData<List<DataPerShop>> = livedatapershop
+
+    fun getproductpershop(search : String){
+        api.getpershopname(search).enqueue(object : Callback<GetProductspershop>{
+            override fun onResponse(
+                call: Call<GetProductspershop>,
+                response: Response<GetProductspershop>
+            ) {
+                if (response.isSuccessful){
+                    livedatapershop.value = response.body()!!.data
+                }
+                else{
+                    Log.e("ProductViewModel", "Cannot send data get product per shop")
+                }
+            }
+
+            override fun onFailure(call: Call<GetProductspershop>, t: Throwable) {
+                Log.e("ProductViewModel", "Data Per Shop Per Null")
+            }
+
+        })
     }
 
 

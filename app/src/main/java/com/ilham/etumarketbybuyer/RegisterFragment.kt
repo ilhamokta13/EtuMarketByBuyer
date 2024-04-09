@@ -10,6 +10,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
@@ -29,6 +31,7 @@ class RegisterFragment : Fragment() {
     lateinit var firebaseAuth: FirebaseAuth
     private lateinit var databaseReference: DatabaseReference
     lateinit var userVm : UserViewModel
+    private var titleAd:String? = null
 
 
     override fun onCreateView(
@@ -45,6 +48,13 @@ class RegisterFragment : Fragment() {
         firebaseAuth = FirebaseAuth.getInstance()
         pref = requireActivity().getSharedPreferences("Berhasil", Context.MODE_PRIVATE)
         userVm = ViewModelProvider(this).get(UserViewModel::class.java)
+
+
+        val hintTitle = resources.getStringArray(R.array.Role)
+
+        formTitle(hintTitle)
+
+
 
 
 
@@ -126,6 +136,20 @@ class RegisterFragment : Fragment() {
             }
         }
     }
+
+    private fun formTitle(hintTitle: Array<String>) {
+        binding.etRole.apply {
+            val adapterTitle = ArrayAdapter(requireContext(), R.layout.dropdown_item, hintTitle)
+            setAdapter(adapterTitle)
+            hint = "Title"
+            onItemClickListener = AdapterView.OnItemClickListener{ _, _, position, _ ->
+                titleAd = adapterTitle.getItem(position).toString()
+            }
+        }
+    }
+
+
+
 
 
 

@@ -13,7 +13,9 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
@@ -35,11 +37,8 @@ class ProfileFragment : Fragment() {
     private lateinit var firebaseUser: FirebaseUser
     private lateinit var databaseReference: DatabaseReference
     lateinit var userVm : UserViewModel
-
     private var filePath: Uri? = null
-
     private val PICK_IMAGE_REQUEST: Int = 2020
-
     private lateinit var storage: FirebaseStorage
     private lateinit var storageRef: StorageReference
 
@@ -87,6 +86,25 @@ class ProfileFragment : Fragment() {
             chooseImage()
         }
 
+        if (pref.getString("token", "")!!.isEmpty()) {
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Login")
+                .setMessage("Anda Belum Login")
+                .setCancelable(false)
+                .setNegativeButton("Cancel") { dialog, which ->
+                    // Respond to negative button press
+                    findNavController().navigate(R.id.action_profileFragment2_to_homeFragment2)
+                }
+                .setPositiveButton("Login") { dialog, which ->
+                    // Respond to positive button press
+                    findNavController().navigate(R.id.action_profileFragment2_to_loginFragment)
+                }
+                .show()
+        } else if (pref.getString("token", "")!!.isNotEmpty()) {
+
+
+
+        }
 
 
         val getNama = pref.getString("fullname", "")
@@ -103,6 +121,9 @@ class ProfileFragment : Fragment() {
 
         val getshopname = pref.getString("shopname", "")
         binding.txtShopname.setText(getshopname)
+
+
+
 
         userVm.responseupdateprofile.observe(viewLifecycleOwner){
             binding.apply {
@@ -196,9 +217,11 @@ class ProfileFragment : Fragment() {
 
         userVm.updateprofile(token,inputnama,inputemail,inputtelepon,inputrole, inputshopname)
 
-        val dataprofile = DataProfile(inputemail,inputnama,id,pass,inputrole,shopName,inputtelepon,0)
+        val dataprofile = DataProfile(inputemail,inputnama,id,pass,inputrole,inputshopname,inputtelepon,0)
 
-       getprofile(dataprofile)
+        getprofile(dataprofile)
+
+
         userVm.responseupdateprofile.observe(viewLifecycleOwner){
             if (it != null) {
                 Toast.makeText(context, "Update Profile Berhasil", Toast.LENGTH_SHORT).show()
@@ -214,10 +237,16 @@ class ProfileFragment : Fragment() {
         sharedPref.putString("email", currentUser.email)
         sharedPref.putString("telephone", currentUser.telp)
         sharedPref.putString("fullname", currentUser.fullName)
+        sharedPref.putString("password", currentUser.password)
         sharedPref.putString("role", currentUser.role)
         sharedPref.putString("shopname", currentUser.shopName)
+        sharedPref.putString("id", currentUser.id)
         sharedPref.apply()
+
+
+
     }
+
 
 
 

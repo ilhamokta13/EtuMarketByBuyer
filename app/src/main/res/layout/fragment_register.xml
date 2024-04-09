@@ -128,8 +128,8 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/til_role"
-                style="@style/LoginTextInputLayoutStyle"
+                android:id="@+id/form_titlelocation"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
@@ -145,13 +145,12 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/til_password">
 
-                <com.google.android.material.textfield.TextInputEditText
+                <AutoCompleteTextView
                     android:id="@+id/et_role"
                     android:layout_width="match_parent"
-                    android:layout_height="55dp"
-                    android:fontFamily="@font/nunitosemibold"
-                    android:textSize="16sp" />
-
+                    android:layout_height="match_parent"
+                    android:inputType="none"
+                    tools:ignore="SpeakableTextPresentCheck" />
             </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -172,7 +171,7 @@
                 app:hintTextColor="@color/color_main"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/til_role">
+                app:layout_constraintTop_toBottomOf="@+id/form_titlelocation">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_PhoneRegister"

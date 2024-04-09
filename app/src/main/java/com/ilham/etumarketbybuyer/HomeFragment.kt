@@ -4,6 +4,7 @@ import android.app.SearchManager
 import android.content.Context
 import android.os.Bundle
 import android.view.*
+import android.view.inputmethod.EditorInfo
 import androidx.fragment.app.Fragment
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat.getSystemService
@@ -27,6 +28,7 @@ class HomeFragment : Fragment() {
     lateinit var CartVm : CartViewModel
     private lateinit var kelasList:ArrayList<DataSliderResponse>
     private lateinit var sliderAdapter:SliderAdapter
+    lateinit var adapter : BuyerAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,7 +44,12 @@ class HomeFragment : Fragment() {
         productVm = ViewModelProvider(this).get(ProductViewModel::class.java)
         CartVm = ViewModelProvider(this).get(CartViewModel::class.java)
 
-        getProduct()
+
+        val query = binding.etSearchProduct.text.toString()
+        getProduct(query)
+
+
+        adapter = BuyerAdapter(ArrayList())
 
         kelasList = ArrayList()
         kelasList.add(DataSliderResponse(R.drawable.banner_home))
@@ -57,10 +64,20 @@ class HomeFragment : Fragment() {
             addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
         }
 
+        binding.etSearchProduct.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                val query = binding.etSearchProduct.text.toString()
+                getProduct(query)
+                return@setOnEditorActionListener true
+            }
+            false
+        }
+
     }
 
-    fun getProduct(){
-        productVm.getAllproduct()
+
+    fun getProduct(search:String){
+        productVm.getAllproduct(search)
         productVm.dataProduct.observe(viewLifecycleOwner, Observer{
             val layoutManager = GridLayoutManager(context,2)
             binding.rvProductHome.layoutManager = layoutManager
@@ -70,33 +87,9 @@ class HomeFragment : Fragment() {
         })
     }
 
-//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater): Boolean {
-//        inflater.inflate(R.menu.search_menu, menu)
-//
-//        //Create search Manager
-//        val searchManager = requireActivity().getSystemService(Context.SEARCH_SERVICE) as SearchManager
-//        val vSearch = menu?.findItem(R.id.search_menu)?.actionView as SearchView
-//
-//        vSearch.apply {
-//            setSearchableInfo(searchManager.getSearchableInfo(requireActivity().componentName))
-//            queryHint = resources.getString(R.string.hint)
-//            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-//                override fun onQueryTextSubmit(query: String?): Boolean {
-//                    if (query != null) {
-//                        userVm.userSearch(query)
-//                    }
-//
-//                    return true
-//                }
-//
-//                override fun onQueryTextChange(newText: String?): Boolean {
-//                    return false
-//                }
-//
-//            })
-//        }
-//        return true
-//    }
+
+
+
 
 
 

@@ -28,7 +28,9 @@ class BuyerAdapter(private val listproduct: List<DataAllProduct>) : RecyclerView
 
         holder.binding.btnDetail.setOnClickListener{
             var detail = Bundle()
-            detail.putSerializable("detail", listproduct[position])
+            var id = listproduct[position].id
+
+            detail.putString("detail", id)
             Navigation.findNavController(it).navigate(R.id.action_homeFragment2_to_detailFragment, detail)
         }
 
