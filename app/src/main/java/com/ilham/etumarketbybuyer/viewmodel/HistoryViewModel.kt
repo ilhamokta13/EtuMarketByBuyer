@@ -6,7 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.ilham.etumarketbybuyer.model.status.PostUpdateStatus
 import com.ilham.etumarketbybuyer.model.status.ResponseUpdateStatus
-import com.ilham.etumarketbybuyer.model.transaksi.GetTransaksiResponse
 import com.ilham.etumarketbybuyer.model.transaksi.riwayat.DataHistory
 import com.ilham.etumarketbybuyer.model.transaksi.riwayat.GetRiwayatResponse
 import com.ilham.etumarketbybuyer.network.ApiService
@@ -29,10 +28,26 @@ class HistoryViewModel @Inject constructor(private val api : ApiService) : ViewM
                 response: Response<GetRiwayatResponse>
             ) {
                 if (response.isSuccessful) {
-                    livehistory.value = response.body()!!.data
+                    val historyList = mutableListOf<DataHistory>()
+                    response.body()?.data?.forEach { transaction ->
+                        // Memproses setiap transaksi untuk menambahkannya ke daftar riwayat
+                        transaction.products.forEach{ product->
+                            // Membuat objek DataHistory baru untuk setiap produk dalam transaksi
+                            val dataHistory = DataHistory(
+                                transaction.id,
+                                transaction.kodeTransaksi,
+                                listOf(product), // Menggunakan listOf(product) untuk menambahkan produk ke dalam list products
+                                transaction.total,
+                                transaction.user,
+                                transaction.v  // Memastikan properti __v juga disertakan jika diperlukan
+                            )
+                            // Menambahkan objek DataHistory ke daftar riwayat
+                            historyList.add(dataHistory)
+                        }
+                    }
+                    livehistory.value = historyList
                 } else {
                     Log.e("UserViewModel", "${response.errorBody()?.string()}")
-
                 }
             }
 

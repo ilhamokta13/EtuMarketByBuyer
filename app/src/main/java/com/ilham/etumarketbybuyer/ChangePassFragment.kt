@@ -49,7 +49,7 @@ class ChangePassFragment : Fragment() {
         userVm.changepass(token,dataUser)
         userVm.responsechangepass.observe(viewLifecycleOwner) {
             if (it != null) {
-                Toast.makeText(context, "Update Berhasil", Toast.LENGTH_SHORT)
+                Toast.makeText(context, "Update Berhasil", Toast.LENGTH_SHORT).show()
             }
         }
 

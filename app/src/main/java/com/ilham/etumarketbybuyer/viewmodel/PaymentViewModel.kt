@@ -19,8 +19,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PaymentViewModel @Inject constructor(private val api : ApiService) : ViewModel() {
-//    private val livepayment : MutableLiveData<List<PostTransaction>> = MutableLiveData()
-//    val datapayment : LiveData<List<PostTransaction>> = livepayment
 
     private val liveMidtransResponse: MutableLiveData<GetTransaksiResponse> = MutableLiveData()
     val midtransResponse: LiveData<GetTransaksiResponse> = liveMidtransResponse

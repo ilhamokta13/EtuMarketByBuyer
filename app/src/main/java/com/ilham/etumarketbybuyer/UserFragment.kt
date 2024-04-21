@@ -40,6 +40,8 @@ class UserFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        pref = requireActivity().getSharedPreferences("Success", Context.MODE_PRIVATE)
         FirebaseService.sharedPref = requireActivity().getSharedPreferences("Berhasil", Context.MODE_PRIVATE)
 
 

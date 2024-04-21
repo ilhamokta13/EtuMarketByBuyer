@@ -82,14 +82,7 @@
                     android:textSize="14sp"
                     android:textColor="@color/black"
                     android:fontFamily="@font/metropolis_semibold" />
-                <TextView
-                    android:id="@+id/RiwayatStatusPembayaran"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Status Pembayaran"
-                    android:textSize="14sp"
-                    android:textColor="@color/black"
-                    android:fontFamily="@font/metropolis_semibold" />
+
                 <Button
                     android:id="@+id/historyButton"
                     android:layout_width="wrap_content"

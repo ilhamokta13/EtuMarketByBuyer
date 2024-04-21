@@ -31,23 +31,6 @@ class UserAdapter(private val context: Context, private val userList: ArrayList<
 
         holder.binding.layoutUser.setOnClickListener {
 
-//            val username = user.userName
-//            val id = user.userId
-//            val profile = user.profileImage
-//
-//            val chat = User(id, username, profile )
-//
-//            val data = Bundle()
-//
-//            data.putParcelable("datachat", chat)
-//
-//            Navigation.findNavController(it).navigate(R.id.chatFragment2)
-
-//            val bundle  = Bundle()
-//            bundle.putString("userId", user.userId)
-//            bundle.putString("name", user.userName)
-//            Navigation.findNavController(it).navigate(R.id.action_userFragment_to_chatFragment2,bundle)
-
             val intent = Intent(context, ChatActivity::class.java)
             intent.putExtra("userId",user.userId)
             intent.putExtra("fullname",user.fullname)

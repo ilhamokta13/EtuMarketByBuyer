@@ -2,6 +2,7 @@ package com.ilham.etumarketbybuyer
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -32,11 +33,17 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.ilham.etumarketbybuyer.databinding.FragmentDetailBinding
 import com.ilham.etumarketbybuyer.model.cart.DataAddCart
+import com.ilham.etumarketbybuyer.model.product.allproduct.DataAllProduct
 import com.ilham.etumarketbybuyer.model.transaksi.PostTransaction
 import com.ilham.etumarketbybuyer.viewmodel.CartViewModel
+import com.ilham.etumarketbybuyer.viewmodel.FavoriteViewModel
 import com.ilham.etumarketbybuyer.viewmodel.PaymentViewModel
 import com.ilham.etumarketbybuyer.viewmodel.ProductViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
 class DetailFragment : Fragment(), OnMapReadyCallback {
@@ -46,8 +53,10 @@ class DetailFragment : Fragment(), OnMapReadyCallback {
     lateinit var productVm : ProductViewModel
     private lateinit var cartViewModel: CartViewModel
     lateinit var paymentVm : PaymentViewModel
+    lateinit var favoriteVm : FavoriteViewModel
     private lateinit var idProduct: String
     private lateinit var idCart: String
+    private var checkFavorite = false
 
 
     override fun onCreateView(
@@ -65,14 +74,17 @@ class DetailFragment : Fragment(), OnMapReadyCallback {
         productVm = ViewModelProvider(this).get(ProductViewModel::class.java)
         cartViewModel = ViewModelProvider(this)[CartViewModel::class.java]
         paymentVm = ViewModelProvider(this).get(PaymentViewModel::class.java)
+        favoriteVm = ViewModelProvider(this).get(FavoriteViewModel::class.java)
 
         val getData = arguments?.getString("detail")
         val token = pref.getString("token", "").toString()
 //        val getId = pref.getString("id", " ")
-//        idProduct = getData.id
+
 
         productVm.getproductperid(getData!!)
+
         observeDetailProduct()
+
 
         val jmlcart = cartViewModel.getCart()
 
@@ -91,67 +103,15 @@ class DetailFragment : Fragment(), OnMapReadyCallback {
         val mapFragment = childFragmentManager.findFragmentById(R.id.layout_maps) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        binding.btnBeliSekarang.setOnClickListener {
 
-
-            cartViewModel.dataCartUser.observe(viewLifecycleOwner, Observer { cartItems ->
-
-                if (cartItems.isNullOrEmpty()) {
-                    // Handle the case when the cart is empty
-                    // For example, you can show a message or hide the price view
-                    // You might want to update other UI elements accordingly
-                } else {
-                    var totalPrice = 0.0
-                    val listOfIds = mutableListOf<String>()
-                    val listOfQuantities = mutableListOf<Int>()
-
-                    for (product in cartItems) {
-                        val idProductCart = product.productID.id
-                        val productName = product.productID.nameProduct
-                        val quantity = product.quantity
-                        val price = product.productID.price
-                        val keseluruhanharga = quantity * price.toDouble()
-                        totalPrice += keseluruhanharga
-                        listOfIds.add(idProductCart)
-                        listOfQuantities.add(quantity)
-
-                    }
-
-
-                    val dataCart = PostTransaction(listOfIds, listOfQuantities, totalPrice.toInt())
-                    val token = pref.getString("token", "").toString()
-
-                    paymentVm.postpayment(token, dataCart)
-                }
-
-
-            })
-            paymentVm.midtransResponse.observe(viewLifecycleOwner){
-                if (it.message == "Transaksi berhasil dibuat") {
-
-                    val tokenmidtrans = it.midtransResponse.token
-                    val redirectUrl = it.midtransResponse.redirectUrl
-
-
-                    Log.d("Payment Midtrans", "Midtrans :$tokenmidtrans")
-                    val redirecturl = it.midtransResponse.redirectUrl
-
-                    // Cetak log atau tampilkan toast jika perlu
-                    Log.d("Payment Redirect", "Redirect URL: $redirectUrl")
-
-                    // Buka redirect URL
-                    openRedirectUrl(redirectUrl)
-
-
-
-                } else {
-                    Toast.makeText(context, "Response Failed", Toast.LENGTH_SHORT).show()
-                }
-
+        binding.favButton.setOnClickListener {
+            checkFavorite = !checkFavorite
+            if (checkFavorite) {
+//                addToFavorites()
+            } else {
+//                removeFromFavorites()
             }
-
-
-
+            updateUI()
         }
 
 
@@ -160,7 +120,17 @@ class DetailFragment : Fragment(), OnMapReadyCallback {
 
 
 
+
+
     }
+
+
+//    override fun onResume() {
+//        super.onResume()
+//        val getData = arguments?.getSerializable("detail") as DataAllProduct
+//        val id = getData?.id
+////        checkButtonFav(id)
+//    }
 
     private fun observeDetailProduct() {
         productVm.dataproductperid.observe(viewLifecycleOwner) { detailproduct ->
@@ -202,65 +172,75 @@ class DetailFragment : Fragment(), OnMapReadyCallback {
                     val shopName = detailproduct.data.sellerID.shopName
                     getitemshop(shopName)
 
-                    // Tombol Bayar Sekarang
-                    binding.btnBeliSekarang.setOnClickListener {
-                        cartViewModel.dataCartUser.observe(viewLifecycleOwner, Observer { cartItems ->
 
-                            if (cartItems.isNullOrEmpty()) {
-                                // Handle the case when the cart is empty
-                                Toast.makeText(
-                                    requireContext(),
-                                    "Keranjang belanja kosong",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            } else {
-                                var totalPrice = 0.0
-                                val listOfIds = mutableListOf<String>()
-                                val listOfQuantities = mutableListOf<Int>()
+//                    binding.btnBeliSekarang.setOnClickListener {
+//
+//
+//                        cartViewModel.dataCartUser.observe(viewLifecycleOwner, Observer { cartItems ->
+//
+//                            if (cartItems.isNullOrEmpty()) {
+//                                // Handle the case when the cart is empty
+//                                // For example, you can show a message or hide the price view
+//                                // You might want to update other UI elements accordingly
+//                            } else {
+//                                var totalPrice = 0.0
+//                                val listOfIds = mutableListOf<String>()
+//                                val listOfQuantities = mutableListOf<Int>()
+//
+//                                for (product in cartItems) {
+//                                    val idProductCart = product.productID.id
+//                                    val productName = product.productID.nameProduct
+//                                    val quantity = product.quantity
+//                                    val price = product.productID.price
+//                                    val keseluruhanharga = quantity * price.toDouble()
+//                                    totalPrice += keseluruhanharga
+//                                    listOfIds.add(idProductCart)
+//                                    listOfQuantities.add(quantity)
+//
+//                                }
+//
+//
+//                                val dataCart = PostTransaction(listOfIds, listOfQuantities, totalPrice.toInt())
+//                                val token = pref.getString("token", "").toString()
+//
+//                                paymentVm.postpayment(token, dataCart)
+//                            }
+//
+//
+//                        })
+//                        paymentVm.midtransResponse.observe(viewLifecycleOwner){
+//                            if (it.message == "Transaksi berhasil dibuat") {
+//
+//                                val tokenmidtrans = it.midtransResponse.token
+//                                val redirectUrl = it.midtransResponse.redirectUrl
+//
+//
+//                                Log.d("Payment Midtrans", "Midtrans :$tokenmidtrans")
+//                                val redirecturl = it.midtransResponse.redirectUrl
+//
+//                                // Cetak log atau tampilkan toast jika perlu
+//                                Log.d("Payment Redirect", "Redirect URL: $redirectUrl")
+//
+//                                // Buka redirect URL
+//                                openRedirectUrl(redirectUrl)
+//
+//
+//
+//                            } else {
+//                                Toast.makeText(context, "Response Failed", Toast.LENGTH_SHORT).show()
+//                            }
+//
+//                        }
+//
+//
+//
+//
+//
+//
+//
+//                    }
 
-                                for (product in cartItems) {
-                                    val idProductCart = product.productID.id
-                                    val productName = product.productID.nameProduct
-                                    val quantity = product.quantity
-                                    val price = product.productID.price
-                                    val keseluruhanharga = quantity * price.toDouble()
-                                    totalPrice += keseluruhanharga
-                                    listOfIds.add(idProductCart)
-                                    listOfQuantities.add(quantity)
-                                }
 
-                                val dataCart =
-                                    PostTransaction(listOfIds, listOfQuantities, totalPrice.toInt())
-                                val token = pref.getString("token", "").toString()
-
-                                paymentVm.postpayment(token, dataCart)
-                            }
-                        })
-
-                        paymentVm.midtransResponse.observe(viewLifecycleOwner){
-                            if (it.message == "Transaksi berhasil dibuat") {
-
-                                val tokenmidtrans = it.midtransResponse.token
-                                val redirectUrl = it.midtransResponse.redirectUrl
-
-
-                                Log.d("Payment Midtrans", "Midtrans :$tokenmidtrans")
-                                val redirecturl = it.midtransResponse.redirectUrl
-
-                                // Cetak log atau tampilkan toast jika perlu
-                                Log.d("Payment Redirect", "Redirect URL: $redirectUrl")
-
-                                // Buka redirect URL
-                                openRedirectUrl(redirectUrl)
-
-
-
-                            } else {
-                                Toast.makeText(context, "Response Failed", Toast.LENGTH_SHORT).show()
-                            }
-
-                        }
-                    }
 
 
 
@@ -298,7 +278,6 @@ class DetailFragment : Fragment(), OnMapReadyCallback {
 
     private fun addToCart() {
         val getData = arguments?.getString("detail")
-//        idProduct = getData.id
 
         val jmlcart = cartViewModel.getCart()
 
@@ -423,6 +402,87 @@ class DetailFragment : Fragment(), OnMapReadyCallback {
         }
 
     }
+
+//    private fun addToFavorites() {
+//        val data = arguments?.getSerializable("detail") as DataAllProduct
+//        val namaproduk = data?.nameProduct
+//        val id = data?.id
+//        val category = data?.category
+//        val description = data.description
+//        val image = data.image
+//        val latitude = data.latitude
+//        val longitude = data.longitude
+//        val price = data.price
+//        val releaseDate = data.releaseDate
+//        val sellerID = data.sellerID
+//
+//
+//        if (id != null) {
+//            favoriteVm.addFavorite(FavoriteBuyer(category.toString(), description.toString(), id,image, latitude, longitude, namaproduk.toString(), price.toInt(), releaseDate, ))
+//            findNavController().navigate(R.id.action_detailFragment_to_favoriteFragment)
+//            Toast.makeText(context, "Berhasil Menambahkan Item", Toast.LENGTH_SHORT).show()
+//
+//
+//        }
+//    }
+
+
+    // Di bagian removeFromFavorites() di DetailUserActivity
+//    private fun removeFromFavorites() {
+//        val data = arguments?.getSerializable("detail") as DataAllProduct
+//        val namaproduk = data?.nameProduct
+//        val id = data?.id
+//        val category = data?.category
+//        val description = data.description
+//        val image = data.image
+//        val latitude = data.latitude
+//        val longitude = data.longitude
+//        val price = data.price
+//        val releaseDate = data.releaseDate
+//        val sellerID = data.sellerID
+//        if (id != null) {
+//            favoriteVm.removeFavorite(FavoriteBuyer(category.toString(), description.toString(), id,image, latitude, longitude, namaproduk.toString(), price.toInt(), releaseDate))
+//            Toast.makeText(context, "Berhasil Menghapus Item", Toast.LENGTH_SHORT).show()
+//
+//
+//
+//
+//
+//        }
+//    }
+
+
+    private fun updateUI() {
+        if (checkFavorite) {
+            binding.favButton.setBackgroundResource(R.drawable.ic_baseline_favorite_24)
+        } else {
+            binding.favButton.setBackgroundResource(R.drawable.ic_baseline_favorite_border_24)
+        }
+        binding.favButton.isChecked = checkFavorite
+    }
+
+//    private fun checkButtonFav(id: String?) {
+//        CoroutineScope(Dispatchers.IO).launch {
+//            val checkResult = favoriteVm.checkFavorite(id!!)
+//            withContext(Dispatchers.Main) {
+//                updateButton(checkResult.toInt())
+//            }
+//        }
+//    }
+
+    private fun updateButton(checkResult: Int) {
+        if (checkResult > 0) {
+            binding.favButton.setBackgroundResource(R.drawable.ic_baseline_favorite_24)
+            binding.favButton.isChecked = true
+            checkFavorite = true
+        } else {
+            binding.favButton.setBackgroundResource(R.drawable.ic_baseline_favorite_border_24)
+            binding.favButton.isChecked = false
+            checkFavorite = false
+        }
+    }
+
+
 }
 
 

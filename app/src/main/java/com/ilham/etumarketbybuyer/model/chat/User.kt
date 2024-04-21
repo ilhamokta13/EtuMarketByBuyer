@@ -5,6 +5,4 @@ import kotlinx.parcelize.Parcelize
 import java.io.Serializable
 
 
-data class User(
-    var userId:String = "", var fullname:String = "", var profileImage:String = ""
-)
+data class User( var fullname :String = "", var profileImage:String = "", var userId:String = "" )

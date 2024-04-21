@@ -42,7 +42,6 @@ class DetailHistoryFragment : Fragment() {
 
 
         binding.btnUpdateStatus.setOnClickListener {
-
             val selectedStatus = when (binding.rgStatusPesanan.checkedRadioButtonId) {
                 R.id.pending -> "Pending"
                 R.id.paid -> "Paid"
@@ -76,33 +75,36 @@ class DetailHistoryFragment : Fragment() {
 
 
 
-
-
     }
 
     private fun observeDetailProduct(kodetransaction: String?, productId: String?) {
         historyVm.datahistory.observe(viewLifecycleOwner) { listDataPesanan ->
             listDataPesanan.forEach { dataPesanan ->
-                if (dataPesanan.kodeTransaksi == kodetransaction) {
+
+                dataPesanan.products.forEach { products->
+                    if (products.productID.id == productId) {
+                        binding.tvTotalharga.text = dataPesanan.total.toString()
+
+                        dataPesanan.products.forEach { product ->
+
+                            binding.tvNamaproductdetail.text = product.productID.nameProduct
+                            binding.tvCategory.text = product.productID.category
+                            binding.tvQuantity.text = product.quantity.toString()
+                            binding.tvHarga.text = product.productID.price.toString()
+
+                            Glide.with(requireContext())
+                                .load("https://7895jr9m-3000.asse.devtunnels.ms/uploads/${product.productID.image}")
+                                .into(binding.ivProductimagedetail)
 
 
-                    dataPesanan.products.forEach { product ->
+                        }
 
-                        binding.tvNamaproductdetail.text = product.productID.nameProduct
-                        binding.tvCategory.text = product.productID.category
-                        binding.tvQuantity.text = product.quantity.toString()
-                        binding.tvHarga.text = product.productID.price.toString()
-                        binding.tvTotalharga.text = product.total.toString()
-                        Glide.with(requireContext())
-                            .load("https://7895jr9m-3000.asse.devtunnels.ms/uploads/${product.productID.image}")
-                            .into(binding.ivProductimagedetail)
 
 
                     }
-
-
-
                 }
+
+
             }
         }
 

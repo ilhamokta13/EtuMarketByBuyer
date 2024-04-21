@@ -7,7 +7,9 @@ import com.ilham.etumarketbybuyer.model.changepass.DataChangePass
 import com.ilham.etumarketbybuyer.model.login.LoginBody
 import com.ilham.etumarketbybuyer.model.login.ResponseLogin
 import com.ilham.etumarketbybuyer.model.profile.DataProfile
+import com.ilham.etumarketbybuyer.model.profile.GetProfileResponse
 import com.ilham.etumarketbybuyer.model.profile.UpdateProfileResponse
+import com.ilham.etumarketbybuyer.model.profile.UserProfile
 import com.ilham.etumarketbybuyer.model.register.ResponseRegister
 import com.ilham.etumarketbybuyer.network.ApiService
 import com.ilham.etumarketbybuyer.room.PreferenceManager
@@ -127,16 +129,30 @@ class UserViewModel @Inject constructor(private val api : ApiService, ) : ViewMo
 
     }
 
-//    //get login state
-//    fun getLoginState(): LiveData<Boolean> {
-//        return prefManager.getLoginState().asLiveData()
-//    }
-//
-//    fun saveLoginState(state:Boolean){
-//        viewModelScope.launch {
-//            prefManager.saveLoginState(state)
-//        }
-//    }
+    private val getprofile : MutableLiveData<UserProfile> = MutableLiveData()
+    val dataprofile : LiveData<UserProfile> = getprofile
+
+    fun getUserProfile(token: String){
+        api.getprofile("Bearer $token").enqueue(object : Callback<GetProfileResponse>{
+            override fun onResponse(
+                call: Call<GetProfileResponse>,
+                response: Response<GetProfileResponse>
+            ) {
+                if (response.isSuccessful) {
+                    getprofile.value = response.body()!!.data
+
+                } else {
+                    Log.e("GetProfile", "${response.errorBody()?.string()}")
+                }
+            }
+
+            override fun onFailure(call: Call<GetProfileResponse>, t: Throwable) {
+                Log.e("GetProfile", "Cannot Get Data Profile User")
+
+            }
+
+        })
+    }
 
 
 

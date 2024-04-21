@@ -10,8 +10,6 @@ data class Product(
     val productID: ProductID,
     @SerializedName("quantity")
     val quantity: Int,
-    @SerializedName("total")
-    val total: Int,
     @SerializedName("status")
     val status: String
 )

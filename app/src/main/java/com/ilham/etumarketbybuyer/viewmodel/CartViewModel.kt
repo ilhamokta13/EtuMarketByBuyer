@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.ilham.etumarketbybuyer.model.cart.DataAddCart
+import com.ilham.etumarketbybuyer.model.cart.ResponseAddCart
 import com.ilham.etumarketbybuyer.model.cart.usercart.DeleteAllCartResponse
 import com.ilham.etumarketbybuyer.model.cart.usercart.GetCartResponse
 import com.ilham.etumarketbybuyer.model.cart.usercart.Product
@@ -109,29 +110,38 @@ class CartViewModel @Inject constructor(private val api : ApiService,  private v
     }
 
 
-    private val liveUpdateCart: MutableLiveData<List<DataAddCart>> = MutableLiveData()
-    val dataUpdateCart: LiveData<List<DataAddCart>> = liveUpdateCart
+    private val liveUpdateCart: MutableLiveData<ResponseAddCart> = MutableLiveData()
+    val dataUpdateCart: LiveData<ResponseAddCart> = liveUpdateCart
+
+    private val _cartUpdatedStatus = MutableLiveData<Boolean>()
+    val cartUpdatedStatus: LiveData<Boolean> = _cartUpdatedStatus
+
 
     fun updatecart(token: String, UpdateCart: DataAddCart) {
-        api.UpdateCart("Bearer $token", UpdateCart).enqueue(object : Callback<List<DataAddCart>> {
+        api.UpdateCart("Bearer $token", UpdateCart).enqueue(object : Callback<ResponseAddCart> {
             override fun onResponse(
-                call: Call<List<DataAddCart>>,
-                response: Response<List<DataAddCart>>
+                call: Call<ResponseAddCart>,
+                response: Response<ResponseAddCart>
             ) {
                 if (response.isSuccessful) {
                     liveUpdateCart.value = response.body()!!
+                    _cartUpdatedStatus.value = true // Setel status pembaruan data menjadi true
                 } else {
-                    Log.e("CartUserViewModel", "${response.errorBody()?.string()}")
-
+                    Log.e("CartViewModel", "Failed to update cart data: ${response.errorBody()?.string()}")
                 }
             }
 
-            override fun onFailure(call: Call<List<DataAddCart>>, t: Throwable) {
-                Log.e("CartViewModel", "Null Data Cart")
+            override fun onFailure(call: Call<ResponseAddCart>, t: Throwable) {
+                Log.e("CartViewModel", "Failed to update cart: ${t.message}")
             }
 
         })
     }
+
+    fun setCartUpdatedStatus(status: Boolean) {
+        _cartUpdatedStatus.value = status
+    }
+
 
     private val deleteCart: MutableLiveData<DeleteAllCartResponse> = MutableLiveData()
     val livedeletecart: LiveData<DeleteAllCartResponse> = deleteCart

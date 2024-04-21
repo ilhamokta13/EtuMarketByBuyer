@@ -3,6 +3,8 @@ package com.ilham.etumarketbybuyer
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -35,6 +37,8 @@ class CartFragment : Fragment() {
     private lateinit var idProduct: String
     private var cartItems: List<Product> = listOf()
 
+    private lateinit var handler: Handler
+    private val interval: Long = 3600000 // 1 jam
 
 
     override fun onCreateView(
@@ -53,19 +57,13 @@ class CartFragment : Fragment() {
         productVm = ViewModelProvider(this).get(ProductViewModel::class.java)
         paymentVm = ViewModelProvider(this).get(PaymentViewModel::class.java)
         idUser = pref.getString("token", "").toString()
-        cartadapter = CartAdapter(ArrayList(),cartVm, idUser)
 
 
+        // Inisialisasi handler
+        handler = Handler(Looper.getMainLooper())
 
-
-        val jmlcart = cartVm.getCart()
-
-//        val belanja = setCart(jmlcart)
-//
-//        binding.tvJumlahCart.text = belanja.toString()
-
-
-
+        // Mulai pengulangan
+        startRepeatingTask()
 
 
 
@@ -87,16 +85,20 @@ class CartFragment : Fragment() {
                 .show()
         } else if (pref.getString("token", "")!!.isNotEmpty()) {
 
-           getDataCart()
+            getDataCart()
 
 
 
         }
+
+
 
         binding.btnDeletecart.setOnClickListener {
             cartVm.deletecart(idUser)
             Toast.makeText(requireContext(), "Item telah dihapus", Toast.LENGTH_SHORT).show()
         }
+
+
 
         binding.btnCheckout.setOnClickListener {
 
@@ -159,56 +161,13 @@ class CartFragment : Fragment() {
             }
 
 
-
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        getDataCart()
 
     }
 
-    fun checkTokenAndProceed() {
-        if (isTokenExpired()) {
-            // Tampilkan dialog login atau navigasi ke halaman login
-            MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Sesi Habis")
-                .setMessage("Sesi Anda telah berakhir. Silakan login kembali.")
-                .setPositiveButton("Login") { dialog, which ->
-                    findNavController().navigate(R.id.action_cartFragment_to_loginFragment)
-                }
-                .setCancelable(false)
-                .show()
-        } else {
-            // Lanjutkan dengan operasi yang memerlukan autentikasi
-            getDataCart()
-        }
-    }
 
-    // Fungsi untuk memeriksa apakah token telah kedaluwarsa
-    fun isTokenExpired(): Boolean {
-        val expiryTime = pref.getLong("expiry_time", 0) // Anda perlu menyimpan waktu kedaluwarsa token saat login
-        val currentTime = System.currentTimeMillis()
-        val timeLeft = expiryTime - currentTime
-        val timeThreshold = 3600000 // 3600000 milidetik = 1 jam
-
-        return timeLeft <= timeThreshold
-    }
 
 
     fun getDataCart() {
@@ -216,6 +175,9 @@ class CartFragment : Fragment() {
         cartVm.CartUser(token)
         cartVm.dataCartUser.observe(viewLifecycleOwner, Observer { cartItems ->
             binding.rvListCart.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+            binding.rvListCart.adapter = CartAdapter(cartItems,requireContext(), cartVm, idUser)
+
+
 
             if (cartItems.isNullOrEmpty()) {
                 // Handle the case when the cart is empty
@@ -242,11 +204,70 @@ class CartFragment : Fragment() {
 
                 binding.tvPriceProduct.text = totalPrice.toString()
 
+                cartVm.dataUpdateCart.observe(viewLifecycleOwner, Observer { updated ->
+                    if (updated.message == "Update cart") {
+                        CartAdapter(cartItems,requireContext(),cartVm, idUser).notifyDataSetChanged() // Panggil notifyDataSetChanged() saat data diperbarui
+                        // Setel kembali status pembaruan data menjadi false jika perlu
+                        cartVm.setCartUpdatedStatus(false)
+                    }
+                })
+
+
+
 
             }
 
-            binding.rvListCart.adapter = CartAdapter(cartItems, cartVm, idUser)
+
+
+
+
+
         })
+    }
+
+
+    private fun startRepeatingTask() {
+        // Jalankan runnable setiap interval waktu
+        handler.postDelayed(object : Runnable {
+            override fun run() {
+                // Panggil fungsi untuk meminta pengguna untuk login kembali
+                promptUserForLogin()
+
+                // Ulangi pengulangan
+                handler.postDelayed(this, interval)
+            }
+        }, interval)
+    }
+
+    private fun showLoginDialog() {
+        // Tampilkan dialog login menggunakan MaterialAlertDialogBuilder
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Login")
+            .setMessage("Anda Belum Login")
+            .setCancelable(false)
+            .setNegativeButton("Cancel") { dialog, which ->
+                // Respon saat tombol negatif ditekan
+                // Anda dapat menyesuaikan aksi yang diperlukan di sini
+            }
+            .setPositiveButton("Login") { dialog, which ->
+                // Respon saat tombol positif ditekan
+                // Navigasikan pengguna ke layar login
+                findNavController().navigate(R.id.action_cartFragment_to_loginFragment)
+            }
+            .show()
+    }
+
+    private fun stopRepeatingTask() {
+        // Hentikan pengulangan jika handler belum diinisialisasi
+        handler.removeCallbacksAndMessages(null)
+    }
+
+    private fun promptUserForLogin() {
+        // Cek apakah pengguna telah login
+        if (pref.getString("token", "")!!.isEmpty()) {
+            // Jika belum login, tampilkan dialog login
+            showLoginDialog()
+        }
     }
 
 
@@ -260,6 +281,9 @@ class CartFragment : Fragment() {
         }
 
     }
+
+
+
 
 
 }

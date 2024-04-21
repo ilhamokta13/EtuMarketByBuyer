@@ -111,6 +111,9 @@
         <action
             android:id="@+id/action_resetPassFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_resetPassFragment_to_changePassFragment"
+            app:destination="@id/changePassFragment" />
     </fragment>
     <fragment
         android:id="@+id/registerFragment"
@@ -144,6 +147,9 @@
         <action
             android:id="@+id/action_detailFragment_to_webViewFragment"
             app:destination="@id/webViewFragment" />
+        <action
+            android:id="@+id/action_detailFragment_to_favoriteFragment"
+            app:destination="@id/favoriteFragment" />
     </fragment>
     <fragment
         android:id="@+id/pilihProdukFragment"
@@ -199,4 +205,13 @@
         android:name="com.ilham.etumarketbybuyer.DetailHistoryFragment"
         android:label="fragment_detail_history"
         tools:layout="@layout/fragment_detail_history" />
+    <fragment
+        android:id="@+id/favoriteFragment"
+        android:name="com.ilham.etumarketbybuyer.FavoriteFragment"
+        android:label="fragment_favorite"
+        tools:layout="@layout/fragment_favorite" >
+        <action
+            android:id="@+id/action_favoriteFragment_to_detailFragment"
+            app:destination="@id/detailFragment" />
+    </fragment>
 </navigation>

@@ -1,5 +1,6 @@
 package com.ilham.etumarketbybuyer
 
+import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -14,62 +15,12 @@ import com.ilham.etumarketbybuyer.model.cart.usercart.Product
 import com.ilham.etumarketbybuyer.model.cart.usercart.ProductID
 import com.ilham.etumarketbybuyer.viewmodel.CartViewModel
 
-    class CartAdapter(private var listCart : List<Product>, var cartVm : CartViewModel, var token : String) : RecyclerView.Adapter<CartAdapter.ViewHolder>() {
+    class CartAdapter(private var listCart : List<Product>, var context : Context, var cartVm : CartViewModel, var token : String) : RecyclerView.Adapter<CartAdapter.ViewHolder>() {
         inner class ViewHolder(val binding: ItemCartBinding) :
             RecyclerView.ViewHolder(binding.root) {
 
             init {
-//                binding.decJumlahCart.setOnClickListener {
-//                    val position = adapterPosition
-//                    if (position != RecyclerView.NO_POSITION) {
-//                        val product = listCart[position]
-//                        val dataAddCart = DataAddCart(listOf(product.productID.id),
-//                            listOf(product.quantity - 1)
-//                        )
-//                        cartVm.updatecart(token, dataAddCart)
-//
-//
-//                    }
-//
-//
-//                }
 
-                binding.decJumlahCart.setOnClickListener {
-                    val position = adapterPosition
-                    if (position != RecyclerView.NO_POSITION) {
-                        val product = listCart[position]
-                        val updatedQuantity = product.quantity - 1
-                        if (updatedQuantity >= 0) {
-                            val dataAddCart = DataAddCart(listOf(product.productID.id), listOf(updatedQuantity))
-                            cartVm.updatecart(token, dataAddCart)
-                            binding.tvJumlahCart.text = updatedQuantity.toString()
-                        }
-                    }
-                }
-
-
-
-//                binding.addJumlahCart.setOnClickListener {
-//                    val position = adapterPosition
-//                    if (position != RecyclerView.NO_POSITION) {
-//                        val product = listCart[position]
-//                        val dataAddCart = DataAddCart(listOf(product.productID.id),
-//                            listOf(product.quantity + 1)
-//                        )
-//                        cartVm.updatecart(token, dataAddCart)
-//                    }
-//                }
-
-                binding.addJumlahCart.setOnClickListener {
-                    val position = adapterPosition
-                    if (position != RecyclerView.NO_POSITION) {
-                        val product = listCart[position]
-                        val updatedQuantity = product.quantity + 1
-                        val dataAddCart = DataAddCart(listOf(product.productID.id), listOf(updatedQuantity))
-                        cartVm.updatecart(token, dataAddCart)
-                        binding.tvJumlahCart.text = updatedQuantity.toString()
-                    }
-                }
             }
         }
 
@@ -94,9 +45,11 @@ import com.ilham.etumarketbybuyer.viewmodel.CartViewModel
 //        cartVm.saveIdCart(id)
 
         val price = listCart[position].productID.price
-        val jumlah = listCart[position].quantity
+        var jumlah = listCart[position].quantity
 
         val hargatotal1 = price * jumlah
+
+        holder.binding.tvJumlahCart.text = jumlah.toString()
 
 
         holder.binding.cartTotal.text = "Harga Total : ${hargatotal1.toString()}"
@@ -109,6 +62,34 @@ import com.ilham.etumarketbybuyer.viewmodel.CartViewModel
 //            Navigation.findNavController(it)
 //                .navigate(R.id.action_cartFragment_to_editCartFragment, edit)
 //        }
+
+
+        holder.binding.addJumlahCart.setOnClickListener {
+            if (jumlah == 1000000){
+                Toast.makeText(context, "Produk mencapai batas maksimal", Toast.LENGTH_SHORT).show()
+            } else {
+                jumlah++
+                holder.binding.tvJumlahCart.text = jumlah.toString()
+                val dataAddCart = DataAddCart(listOf(listCart[position].productID.id), listOf(jumlah))
+
+                listCart[position].quantity = jumlah
+                cartVm.updatecart(token,dataAddCart)
+
+            }
+        }
+
+        holder.binding.decJumlahCart.setOnClickListener {
+            if (jumlah == 0){
+                Toast.makeText(context, "Produk mencapai batas maksimal", Toast.LENGTH_SHORT).show()
+            } else {
+                jumlah--
+                holder.binding.tvJumlahCart.text = jumlah.toString()
+                val dataAddCart = DataAddCart(listOf(listCart[position].productID.id), listOf(jumlah))
+                listCart[position].quantity = jumlah
+                cartVm.updatecart(token,dataAddCart)
+
+            }
+        }
 
 
 
@@ -129,9 +110,7 @@ import com.ilham.etumarketbybuyer.viewmodel.CartViewModel
             return listCart.size
         }
 
-        fun getAllProducts(): List<Product> {
-            return listCart
-        }
+
 
 
 

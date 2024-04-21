@@ -1,5 +1,6 @@
 package com.ilham.etumarketbybuyer
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -10,7 +11,9 @@ import com.ilham.etumarketbybuyer.databinding.ItemProductBinding
 import com.ilham.etumarketbybuyer.model.product.allproduct.DataAllProduct
 import com.ilham.etumarketbybuyer.viewmodel.CartViewModel
 
-class BuyerAdapter(private val listproduct: List<DataAllProduct>) : RecyclerView.Adapter<BuyerAdapter.ViewHolder>() {
+class BuyerAdapter( var listproduct: List<DataAllProduct>) : RecyclerView.Adapter<BuyerAdapter.ViewHolder>() {
+
+
     class ViewHolder(var binding : ItemProductBinding) : RecyclerView.ViewHolder(binding.root) {
 
     }
@@ -36,9 +39,17 @@ class BuyerAdapter(private val listproduct: List<DataAllProduct>) : RecyclerView
 
 
 
+
+
     }
 
     override fun getItemCount(): Int {
         return listproduct.size
     }
+
+//    @SuppressLint("NotifyDataSetChanged")
+//    fun setDataUser(list : List<DataAllProduct>){
+//        listproduct = list
+//        notifyDataSetChanged()
+//    }
 }

@@ -2,9 +2,9 @@ package com.ilham.etumarketbybuyer.network
 
 import com.ilham.etumarketbybuyer.model.alltransaksi.GetAllTransaksi
 import com.ilham.etumarketbybuyer.model.cart.DataAddCart
+import com.ilham.etumarketbybuyer.model.cart.ResponseAddCart
 import com.ilham.etumarketbybuyer.model.cart.usercart.DeleteAllCartResponse
 import com.ilham.etumarketbybuyer.model.cart.usercart.GetCartResponse
-import com.ilham.etumarketbybuyer.model.cart.usercart.Product
 import com.ilham.etumarketbybuyer.model.changepass.ChangePasswordResponse
 import com.ilham.etumarketbybuyer.model.changepass.DataChangePass
 import com.ilham.etumarketbybuyer.model.login.LoginBody
@@ -12,12 +12,12 @@ import com.ilham.etumarketbybuyer.model.login.ResponseLogin
 import com.ilham.etumarketbybuyer.model.product.allproduct.AllProductResponse
 import com.ilham.etumarketbybuyer.model.product.productperid.GetProductPerId
 import com.ilham.etumarketbybuyer.model.product.productshopname.GetProductspershop
+import com.ilham.etumarketbybuyer.model.profile.GetProfileResponse
 import com.ilham.etumarketbybuyer.model.profile.UpdateProfileResponse
 import com.ilham.etumarketbybuyer.model.register.ResponseRegister
 import com.ilham.etumarketbybuyer.model.status.PostUpdateStatus
 import com.ilham.etumarketbybuyer.model.status.ResponseUpdateStatus
 import com.ilham.etumarketbybuyer.model.transaksi.GetTransaksiResponse
-import com.ilham.etumarketbybuyer.model.transaksi.MidtransResponse
 import com.ilham.etumarketbybuyer.model.transaksi.PostTransaction
 import com.ilham.etumarketbybuyer.model.transaksi.riwayat.GetRiwayatResponse
 import retrofit2.Call
@@ -68,7 +68,7 @@ interface ApiService {
     fun UpdateCart(
         @Header("Authorization") token: String,
         @Body request: DataAddCart
-    ): Call <List<DataAddCart>>
+    ): Call <ResponseAddCart>
 
     @DELETE("cart")
     fun deleteProduct(
@@ -102,11 +102,6 @@ interface ApiService {
         @Path("shopName") shopName: String,
     ):Call<GetProductspershop>
 
-//    @GET("transaksi/user-history")
-//    fun gethistory(
-//        @Header("Authorization") token: String
-//    ):Call<GetHistoryResponse>
-
     @GET("/transaksi/getUserTransaksi")
     fun gethistory(
         @Header("Authorization") token: String
@@ -117,6 +112,11 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Body postUpdateStatus: PostUpdateStatus
     ):Call<ResponseUpdateStatus>
+
+    @GET("/user/profile")
+    fun getprofile(
+        @Header("Authorization") token: String
+    ):Call<GetProfileResponse>
 
  
 

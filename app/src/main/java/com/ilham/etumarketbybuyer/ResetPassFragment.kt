@@ -54,7 +54,7 @@ class ResetPassFragment : Fragment() {
                 if (it.isSuccessful){
                     Toast.makeText(context, "Email Reset Password Telah Dikirim", Toast.LENGTH_SHORT).show()
 
-                    Navigation.findNavController(binding.root).navigate(R.id.action_resetPassFragment_to_loginFragment)
+                    Navigation.findNavController(binding.root).navigate(R.id.action_resetPassFragment_to_changePassFragment)
 
                 } else {
                     Toast.makeText(context, "${it.exception?.message}", Toast.LENGTH_SHORT).show()

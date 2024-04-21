@@ -64,8 +64,6 @@ class EditCartFragment : Fragment(), OnMapReadyCallback {
         cartViewModel = ViewModelProvider(this)[CartViewModel::class.java]
 
         val getData = arguments?.getSerializable("edit") as Product
-//        val token = pref.getString("token", "").toString()
-//        val getId = pref.getString("id", " ")
         idProduct = getData.productID.id
 
         productVm.getproductperid(idProduct)
