@@ -31,11 +31,13 @@ class BuyerAdapter( var listproduct: List<DataAllProduct>) : RecyclerView.Adapte
 
         holder.binding.btnDetail.setOnClickListener{
             var detail = Bundle()
-            var id = listproduct[position].id
+//            var id = listproduct[position].id
 
-            detail.putString("detail", id)
+            detail.putParcelable("detail", listproduct[position])
             Navigation.findNavController(it).navigate(R.id.action_homeFragment2_to_detailFragment, detail)
         }
+
+
 
 
 

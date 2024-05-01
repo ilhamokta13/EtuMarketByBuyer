@@ -113,8 +113,7 @@ class CartViewModel @Inject constructor(private val api : ApiService,  private v
     private val liveUpdateCart: MutableLiveData<ResponseAddCart> = MutableLiveData()
     val dataUpdateCart: LiveData<ResponseAddCart> = liveUpdateCart
 
-    private val _cartUpdatedStatus = MutableLiveData<Boolean>()
-    val cartUpdatedStatus: LiveData<Boolean> = _cartUpdatedStatus
+
 
 
     fun updatecart(token: String, UpdateCart: DataAddCart) {
@@ -125,7 +124,6 @@ class CartViewModel @Inject constructor(private val api : ApiService,  private v
             ) {
                 if (response.isSuccessful) {
                     liveUpdateCart.value = response.body()!!
-                    _cartUpdatedStatus.value = true // Setel status pembaruan data menjadi true
                 } else {
                     Log.e("CartViewModel", "Failed to update cart data: ${response.errorBody()?.string()}")
                 }
@@ -138,9 +136,7 @@ class CartViewModel @Inject constructor(private val api : ApiService,  private v
         })
     }
 
-    fun setCartUpdatedStatus(status: Boolean) {
-        _cartUpdatedStatus.value = status
-    }
+
 
 
     private val deleteCart: MutableLiveData<DeleteAllCartResponse> = MutableLiveData()

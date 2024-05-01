@@ -163,8 +163,16 @@ class CartFragment : Fragment() {
 
         }
 
-        getDataCart()
+        binding.btnBack.setOnClickListener {
+            findNavController().navigate(R.id.action_cartFragment_to_homeFragment2)
+        }
 
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        getDataCart()
     }
 
 
@@ -175,47 +183,39 @@ class CartFragment : Fragment() {
         cartVm.CartUser(token)
         cartVm.dataCartUser.observe(viewLifecycleOwner, Observer { cartItems ->
             binding.rvListCart.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-            binding.rvListCart.adapter = CartAdapter(cartItems,requireContext(), cartVm, idUser)
+            binding.rvListCart.adapter = CartAdapter(cartItems,requireContext(), cartVm, idUser, viewLifecycleOwner)
 
 
+                if (cartItems.isNullOrEmpty()) {
+                    // Handle the case when the cart is empty
+                    // For example, you can show a message or hide the price view
+                    binding.tvPriceProduct.text = "0"
+                    // You might want to update other UI elements accordingly
+                } else {
+                    var totalPrice = 0.0
+                    val listOfIds = mutableListOf<String>()
+                    val listOfQuantities = mutableListOf<Int>()
+                    val listOfTotalPrices = mutableListOf<Int>()
 
-            if (cartItems.isNullOrEmpty()) {
-                // Handle the case when the cart is empty
-                // For example, you can show a message or hide the price view
-                binding.tvPriceProduct.text = "0"
-                // You might want to update other UI elements accordingly
-            } else {
-                var totalPrice = 0.0
-                val listOfIds = mutableListOf<String>()
-                val listOfQuantities = mutableListOf<Int>()
-                val listOfTotalPrices = mutableListOf<Int>()
+                    for (product in cartItems) {
+                        val idProductCart = product.productID.id
+                        val productName = product.productID.nameProduct
+                        val quantity = product.quantity
+                        val price = product.productID.price
+                        val keseluruhanharga = quantity * price.toDouble()
+                        totalPrice += keseluruhanharga
+                        listOfIds.add(idProductCart)
+                        listOfQuantities.add(quantity)
+                        listOfTotalPrices.add(keseluruhanharga.toInt())
+                    }
 
-                for (product in cartItems) {
-                    val idProductCart = product.productID.id
-                    val productName = product.productID.nameProduct
-                    val quantity = product.quantity
-                    val price = product.productID.price
-                    val keseluruhanharga = quantity * price.toDouble()
-                    totalPrice += keseluruhanharga
-                    listOfIds.add(idProductCart)
-                    listOfQuantities.add(quantity)
-                    listOfTotalPrices.add(keseluruhanharga.toInt())
+                    binding.tvPriceProduct.text = totalPrice.toString()
+
+
                 }
 
-                binding.tvPriceProduct.text = totalPrice.toString()
-
-                cartVm.dataUpdateCart.observe(viewLifecycleOwner, Observer { updated ->
-                    if (updated.message == "Update cart") {
-                        CartAdapter(cartItems,requireContext(),cartVm, idUser).notifyDataSetChanged() // Panggil notifyDataSetChanged() saat data diperbarui
-                        // Setel kembali status pembaruan data menjadi false jika perlu
-                        cartVm.setCartUpdatedStatus(false)
-                    }
-                })
 
 
-
-
-            }
 
 
 
@@ -223,6 +223,8 @@ class CartFragment : Fragment() {
 
 
         })
+
+
     }
 
 

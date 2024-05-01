@@ -1,8 +1,11 @@
 package com.ilham.etumarketbybuyer.model.product.allproduct
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 import java.io.Serializable
 
+@Parcelize
 data class DataAllProduct(
     @SerializedName("category")
     val category: String,
@@ -26,4 +29,4 @@ data class DataAllProduct(
     val sellerID: SellerID,
     @SerializedName("__v")
     val v: Int
-):Serializable
+):Parcelable

@@ -2,9 +2,7 @@ package com.ilham.etumarketbybuyer
 
 import android.Manifest
 import android.app.NotificationManager
-import android.content.Context
-import android.content.Intent
-import android.content.SharedPreferences
+import android.content.*
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.MediaRecorder
@@ -12,8 +10,15 @@ import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Spannable
+import android.text.method.LinkMovementMethod
+import android.text.style.URLSpan
+import android.text.util.Linkify
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.NotificationCompat
@@ -52,6 +57,7 @@ class ChatActivity : AppCompatActivity() {
     private var audioFileName: String = ""
 
 
+
     companion object {
         const val CHANNEL_ID = "my_channel_id"
         const val NOTIFICATION_ID = 1
@@ -66,35 +72,40 @@ class ChatActivity : AppCompatActivity() {
 
         pref = this.getSharedPreferences("Berhasil", Context.MODE_PRIVATE)
 
-        if (pref.getString("token", "")!!.isEmpty()) {
-            MaterialAlertDialogBuilder(this)
-                .setTitle("Login")
-                .setMessage("Anda Belum Login")
-                .setCancelable(false)
-                .setNegativeButton("Cancel") { dialog, which ->
-                    // Respond to negative button press
-                    val intent = Intent(this, ChatActivity::class.java)
-                    this.startActivity(intent)
-                }
-                .setPositiveButton("Login") { dialog, which ->
-                    val loginFragment = LoginFragment()
 
-                    // Start a fragment transaction
-                    val transaction = supportFragmentManager.beginTransaction()
+//        if (pref.getString("token", "")!!.isEmpty()) {
+//            MaterialAlertDialogBuilder(this)
+//                .setTitle("Login")
+//                .setMessage("Anda Belum Login")
+//                .setCancelable(false)
+//                .setNegativeButton("Cancel") { dialog, which ->
+//                    // Respond to negative button press
+//                    val intent = Intent(this, ChatActivity::class.java)
+//                    this.startActivity(intent)
+//                }
+//                .setPositiveButton("Login") { dialog, which ->
+//                    val loginFragment = LoginFragment()
+//
+//                    // Start a fragment transaction
+//                    val transaction = supportFragmentManager.beginTransaction()
+//
+//                    // Replace the current fragment with the login fragment
+//                    transaction.replace(R.id.loginFragment, loginFragment)
+//
+//                    // Commit the transaction
+//                    transaction.commit()
+//                }
+//                .show()
+//        } else if (pref.getString("token", "", )!!.isNotEmpty()) {
+//
+//
+//
+//        }
 
-                    // Replace the current fragment with the login fragment
-                    transaction.replace(R.id.loginFragment, loginFragment)
+        binding.chatRecyclerView.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
-                    // Commit the transaction
-                    transaction.commit()
-                }
-                .show()
-        } else if (pref.getString("token", "", )!!.isNotEmpty()) {
 
-            binding.chatRecyclerView.layoutManager =
-                LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-
-        }
 
 
 
@@ -112,16 +123,15 @@ class ChatActivity : AppCompatActivity() {
             .into(binding.imgProfile)
 
 
+        firebaseUser = FirebaseAuth.getInstance().currentUser
+        reference = FirebaseDatabase.getInstance().getReference("Users").child(userId!!)
+
+
 
         binding.btnSendImage.setOnClickListener {
             openImagePicker()
         }
 
-
-
-
-        firebaseUser = FirebaseAuth.getInstance().currentUser
-        reference = FirebaseDatabase.getInstance().getReference("Users").child(userId!!)
 
         binding.btnSendMessage.setOnClickListener {
             // Extracted the user ID and user name from the intent
@@ -161,7 +171,11 @@ class ChatActivity : AppCompatActivity() {
         }
 
         readMessage(firebaseUser!!.uid, userId)
+
     }
+
+
+
 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -172,6 +186,8 @@ class ChatActivity : AppCompatActivity() {
             showImagePreview(selectedImagePath)
         }
     }
+
+
 
 
     private fun openImagePicker() {
@@ -330,6 +346,11 @@ class ChatActivity : AppCompatActivity() {
             }
         }
     }
+
+
+
+
+
 
 
 

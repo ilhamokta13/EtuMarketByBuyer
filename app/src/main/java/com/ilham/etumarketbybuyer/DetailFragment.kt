@@ -31,6 +31,9 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
+import com.ilham.etumarketbybuyer.database.BuyerDatabase
+import com.ilham.etumarketbybuyer.database.FavoriteBuyer
+import com.ilham.etumarketbybuyer.database.FavoriteBuyerDao
 import com.ilham.etumarketbybuyer.databinding.FragmentDetailBinding
 import com.ilham.etumarketbybuyer.model.cart.DataAddCart
 import com.ilham.etumarketbybuyer.model.product.allproduct.DataAllProduct
@@ -40,10 +43,7 @@ import com.ilham.etumarketbybuyer.viewmodel.FavoriteViewModel
 import com.ilham.etumarketbybuyer.viewmodel.PaymentViewModel
 import com.ilham.etumarketbybuyer.viewmodel.ProductViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 
 @AndroidEntryPoint
 class DetailFragment : Fragment(), OnMapReadyCallback {
@@ -56,7 +56,8 @@ class DetailFragment : Fragment(), OnMapReadyCallback {
     lateinit var favoriteVm : FavoriteViewModel
     private lateinit var idProduct: String
     private lateinit var idCart: String
-    private var checkFavorite = false
+    var favDao: FavoriteBuyerDao? = null
+    var buyerDb: BuyerDatabase? = null
 
 
     override fun onCreateView(
@@ -76,12 +77,18 @@ class DetailFragment : Fragment(), OnMapReadyCallback {
         paymentVm = ViewModelProvider(this).get(PaymentViewModel::class.java)
         favoriteVm = ViewModelProvider(this).get(FavoriteViewModel::class.java)
 
-        val getData = arguments?.getString("detail")
+        buyerDb = BuyerDatabase.getInstance(requireContext())
+        favDao = buyerDb?.buyerDao()
+
+
+        val getData =  arguments?.getParcelable<DataAllProduct>("detail") as DataAllProduct
         val token = pref.getString("token", "").toString()
 //        val getId = pref.getString("id", " ")
 
+        val getId = getData.id
 
-        productVm.getproductperid(getData!!)
+
+        productVm.getproductperid(getId)
 
         observeDetailProduct()
 
@@ -104,14 +111,20 @@ class DetailFragment : Fragment(), OnMapReadyCallback {
         mapFragment.getMapAsync(this)
 
 
-        binding.favButton.setOnClickListener {
-            checkFavorite = !checkFavorite
-            if (checkFavorite) {
-//                addToFavorites()
-            } else {
-//                removeFromFavorites()
-            }
-            updateUI()
+//        binding.favButton.setOnClickListener {
+//            checkFavorite = !checkFavorite
+//            if (checkFavorite) {
+////                addToFavorites()
+//            } else {
+////                removeFromFavorites()
+//            }
+//            updateUI()
+//        }
+
+        favorite()
+
+        binding.img.setOnClickListener {
+            findNavController().navigate(R.id.action_detailFragment_to_favoriteFragment)
         }
 
 
@@ -277,7 +290,8 @@ class DetailFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun addToCart() {
-        val getData = arguments?.getString("detail")
+        val getData =  arguments?.getParcelable<DataAllProduct>("detail") as DataAllProduct
+        val getid = getData.id
 
         val jmlcart = cartViewModel.getCart()
 
@@ -285,7 +299,7 @@ class DetailFragment : Fragment(), OnMapReadyCallback {
 
         binding.tvJumlahCart.text = belanja.toString()
 
-        val dataCart = DataAddCart(listOf(getData.toString()), listOf(belanja))
+        val dataCart = DataAddCart(listOf(getid), listOf(belanja))
         val token = pref.getString("token", "").toString()
         cartViewModel.postCart(token,dataCart)
 
@@ -403,82 +417,66 @@ class DetailFragment : Fragment(), OnMapReadyCallback {
 
     }
 
-//    private fun addToFavorites() {
-//        val data = arguments?.getSerializable("detail") as DataAllProduct
-//        val namaproduk = data?.nameProduct
-//        val id = data?.id
-//        val category = data?.category
-//        val description = data.description
-//        val image = data.image
-//        val latitude = data.latitude
-//        val longitude = data.longitude
-//        val price = data.price
-//        val releaseDate = data.releaseDate
-//        val sellerID = data.sellerID
-//
-//
-//        if (id != null) {
-//            favoriteVm.addFavorite(FavoriteBuyer(category.toString(), description.toString(), id,image, latitude, longitude, namaproduk.toString(), price.toInt(), releaseDate, ))
-//            findNavController().navigate(R.id.action_detailFragment_to_favoriteFragment)
-//            Toast.makeText(context, "Berhasil Menambahkan Item", Toast.LENGTH_SHORT).show()
-//
-//
+
+
+
+//    private fun updateUI() {
+//        if (checkFavorite) {
+//            binding.favButton.setBackgroundResource(R.drawable.ic_baseline_favorite_24)
+//        } else {
+//            binding.favButton.setBackgroundResource(R.drawable.ic_baseline_favorite_border_24)
 //        }
+//        binding.favButton.isChecked = checkFavorite
 //    }
 
 
-    // Di bagian removeFromFavorites() di DetailUserActivity
-//    private fun removeFromFavorites() {
-//        val data = arguments?.getSerializable("detail") as DataAllProduct
-//        val namaproduk = data?.nameProduct
-//        val id = data?.id
-//        val category = data?.category
-//        val description = data.description
-//        val image = data.image
-//        val latitude = data.latitude
-//        val longitude = data.longitude
-//        val price = data.price
-//        val releaseDate = data.releaseDate
-//        val sellerID = data.sellerID
-//        if (id != null) {
-//            favoriteVm.removeFavorite(FavoriteBuyer(category.toString(), description.toString(), id,image, latitude, longitude, namaproduk.toString(), price.toInt(), releaseDate))
-//            Toast.makeText(context, "Berhasil Menghapus Item", Toast.LENGTH_SHORT).show()
-//
-//
-//
-//
-//
+
+//    private fun updateButton(checkResult: Int) {
+//        if (checkResult > 0) {
+//            binding.favButton.setBackgroundResource(R.drawable.ic_baseline_favorite_24)
+//            binding.favButton.isChecked = true
+//            checkFavorite = true
+//        } else {
+//            binding.favButton.setBackgroundResource(R.drawable.ic_baseline_favorite_border_24)
+//            binding.favButton.isChecked = false
+//            checkFavorite = false
 //        }
 //    }
 
+    private fun favorite(){
+        binding.favButton.setOnClickListener {
+            GlobalScope.async {
+                val getFav = arguments?.getParcelable<DataAllProduct>("detail") as DataAllProduct
+                val id = getFav.id
+                val category = getFav.category
+                val description = getFav.description
+                val image = getFav.image
+                val latitude = getFav.latitude
+                val longitude = getFav.longitude
+                val namaproduk = getFav.nameProduct
+                val price = getFav.price
+                val releseDate = getFav.releaseDate
+                val hasil = buyerDb?.buyerDao()!!.addToFavorit(FavoriteBuyer(id,category,description,image,latitude,longitude, namaproduk, price, releseDate))
 
-    private fun updateUI() {
-        if (checkFavorite) {
-            binding.favButton.setBackgroundResource(R.drawable.ic_baseline_favorite_24)
-        } else {
-            binding.favButton.setBackgroundResource(R.drawable.ic_baseline_favorite_border_24)
-        }
-        binding.favButton.isChecked = checkFavorite
-    }
+                activity?.runOnUiThread {
+                    if (hasil != 0.toLong()){
+                        Toast.makeText(context, "Add to Favorit", Toast.LENGTH_LONG).show()
+                        var _isChecked = false
+                        _isChecked = !_isChecked
+                        binding.favButton.isChecked = _isChecked
 
-//    private fun checkButtonFav(id: String?) {
-//        CoroutineScope(Dispatchers.IO).launch {
-//            val checkResult = favoriteVm.checkFavorite(id!!)
-//            withContext(Dispatchers.Main) {
-//                updateButton(checkResult.toInt())
-//            }
-//        }
-//    }
 
-    private fun updateButton(checkResult: Int) {
-        if (checkResult > 0) {
-            binding.favButton.setBackgroundResource(R.drawable.ic_baseline_favorite_24)
-            binding.favButton.isChecked = true
-            checkFavorite = true
-        } else {
-            binding.favButton.setBackgroundResource(R.drawable.ic_baseline_favorite_border_24)
-            binding.favButton.isChecked = false
-            checkFavorite = false
+                    }else{
+                        Toast.makeText(context, "Failed", Toast.LENGTH_LONG).show()
+                    }
+                }
+
+
+
+
+
+
+            }
         }
     }
 

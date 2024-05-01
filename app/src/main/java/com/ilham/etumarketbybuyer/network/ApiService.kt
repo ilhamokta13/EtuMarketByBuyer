@@ -80,10 +80,9 @@ interface ApiService {
     fun updateprofile(
         @Header("Authorization") token: String,
         @Field("fullName") fullName : String,
-        @Field("email") email : String,
         @Field("telp") telp : String,
         @Field("role") role:String,
-        @Field("shopName") shopName:String
+        @Field("shopName") shopName:String,
     ):Call<UpdateProfileResponse>
 
     @POST("transaksi/create")
@@ -100,7 +99,7 @@ interface ApiService {
     @GET("/product/shop/{shopName}")
     fun getpershopname(
         @Path("shopName") shopName: String,
-    ):Call<GetProductspershop>
+    ):Call<AllProductResponse>
 
     @GET("/transaksi/getUserTransaksi")
     fun gethistory(
@@ -117,6 +116,13 @@ interface ApiService {
     fun getprofile(
         @Header("Authorization") token: String
     ):Call<GetProfileResponse>
+
+    @FormUrlEncoded
+    @PATCH("admin/complete-profile")
+    fun updateprofileemail(
+        @Header("Authorization") token: String,
+        @Field("email") email : String,
+    ):Call<UpdateProfileResponse>
 
  
 

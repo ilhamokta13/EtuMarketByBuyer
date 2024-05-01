@@ -175,48 +175,18 @@
                         android:orientation="vertical"
                         android:gravity="center"
                         >
-
                         <RadioButton
-                            android:id="@+id/pending"
-                            android:textColor="@color/black"
+                            android:id="@+id/terimapesanan"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Pending"
-                            />
-
-                        <RadioButton
-                            android:id="@+id/paid"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Paid"
+                            android:text="Terima Pesanan"
                             android:textColor="@color/black" />
 
                         <RadioButton
-                            android:id="@+id/Ondelivery"
+                            android:id="@+id/Dibatalkan"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="On Delivery"
-                            android:textColor="@color/black" />
-
-                        <RadioButton
-                            android:id="@+id/Delivered"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Delivered"
-                            android:textColor="@color/black" />
-
-                        <RadioButton
-                            android:id="@+id/Expired"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Expired"
-                            android:textColor="@color/black" />
-
-                        <RadioButton
-                            android:id="@+id/Failed"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Failed"
+                            android:text="Dibatalkan"
                             android:textColor="@color/black" />
                     </RadioGroup>
 

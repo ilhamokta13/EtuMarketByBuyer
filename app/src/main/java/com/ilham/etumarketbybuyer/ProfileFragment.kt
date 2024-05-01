@@ -18,7 +18,9 @@ import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
@@ -43,6 +45,7 @@ class ProfileFragment : Fragment() {
     private val PICK_IMAGE_REQUEST: Int = 2020
     private lateinit var storage: FirebaseStorage
     private lateinit var storageRef: StorageReference
+    lateinit var firebaseAuth: FirebaseAuth
 
     private lateinit var handler: Handler
     private val interval: Long = 3600000 // 1 jam
@@ -63,6 +66,7 @@ class ProfileFragment : Fragment() {
         userVm = ViewModelProvider(this).get(UserViewModel::class.java)
 
         firebaseUser = FirebaseAuth.getInstance().currentUser!!
+        firebaseAuth = FirebaseAuth.getInstance()
         databaseReference =
             FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.uid)
 
@@ -128,6 +132,10 @@ class ProfileFragment : Fragment() {
 
         }
 
+        binding.btnChangeEmail.setOnClickListener {
+            findNavController().navigate(R.id.action_profileFragment2_to_changeEmailFragment)
+        }
+
         binding.btnLogout.setOnClickListener {
             val editor = pref.edit()
             pref.edit().clear().apply()
@@ -191,20 +199,12 @@ class ProfileFragment : Fragment() {
     fun updateuserprofile() {
 
         val token = pref.getString("token", "").toString()
-        val id = pref.getString("idbuyer","" ).toString()
-        val pass= pref.getString("password", "").toString()
-        val shopName = pref.getString("shopname", ""). toString()
         val inputnama = binding.txtFullname.text.toString()
-        val inputemail = binding.txtEmail.text.toString()
         val inputtelepon = binding.txtTelephone.text.toString()
         val inputrole = binding.txtRole.text.toString()
         val inputshopname = binding.txtShopname.text.toString()
 
-        userVm.updateprofile(token,inputnama,inputemail,inputtelepon,inputrole, inputshopname)
-
-        val dataprofile = DataProfile(inputemail,inputnama,id,pass,inputrole,inputshopname,inputtelepon,0)
-
-
+        userVm.updateprofile(token,inputnama,inputtelepon,inputrole, inputshopname)
 
         userVm.responseupdateprofile.observe(viewLifecycleOwner){
             if (it != null) {
@@ -225,7 +225,6 @@ class ProfileFragment : Fragment() {
         userVm.dataprofile.observe(viewLifecycleOwner){
             binding.txtFullname.setText(it.fullName)
             binding.txtTelephone.setText(it.telp)
-            binding.txtEmail.setText(it.email)
             binding.txtShopname.setText(it.shopName)
             binding.txtRole.setText(it.role)
         }
@@ -276,6 +275,12 @@ class ProfileFragment : Fragment() {
             showLoginDialog()
         }
     }
+
+
+
+
+
+
 
 
 

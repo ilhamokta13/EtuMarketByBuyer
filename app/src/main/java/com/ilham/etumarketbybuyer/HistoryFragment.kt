@@ -5,6 +5,8 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.text.Editable
+import android.text.TextWatcher
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -26,6 +28,7 @@ class HistoryFragment : Fragment() {
     lateinit var binding : FragmentHistoryBinding
     lateinit var pref: SharedPreferences
     lateinit var historyVm : HistoryViewModel
+    lateinit var pesananAdapter : HistoryAdapter
     lateinit var token : String
 
     private lateinit var handler: Handler
@@ -44,16 +47,37 @@ class HistoryFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        pesananAdapter = HistoryAdapter(ArrayList())
+
         pref = requireContext().getSharedPreferences("Berhasil", Context.MODE_PRIVATE)
         historyVm =  ViewModelProvider(this).get(HistoryViewModel::class.java)
 
         token = pref.getString("token", "").toString()
 
 
+
         // Inisialisasi handler
         handler = Handler(Looper.getMainLooper())
 
+        getHistory(token)
+
         startRepeatingTask()
+
+
+        binding.etSearchProduct.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                pesananAdapter.filter(s.toString())
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
+
+        binding.rvListHistory.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = pesananAdapter
+        }
 
 
 
@@ -80,12 +104,23 @@ class HistoryFragment : Fragment() {
 
     fun getHistory(token:String){
         historyVm.gethistory(token)
-       historyVm.datahistory.observe(viewLifecycleOwner, Observer{
-            val layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL,false)
-            binding.rvListHistory.layoutManager = layoutManager
-            if (it!= null) {
-                binding.rvListHistory.adapter = HistoryAdapter(it)
-            }
+        historyVm.datahistory.observe(viewLifecycleOwner, Observer{
+
+            pesananAdapter.notifyDataSetChanged()
+           pesananAdapter.filteredList = it
+           pesananAdapter.listhistory = it
+
+           // Separate items by color before updating the UI
+           pesananAdapter.separateItemsByColor()
+           // Notify adapter about the changes
+           pesananAdapter.notifyDataSetChanged()
+
+
+           val layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL,false)
+           binding.rvListHistory.layoutManager = layoutManager
+           binding.rvListHistory.adapter = pesananAdapter
+
+
         })
     }
 
@@ -102,6 +137,8 @@ class HistoryFragment : Fragment() {
             }
         }, interval)
     }
+
+
 
 
     private fun showLoginDialog() {

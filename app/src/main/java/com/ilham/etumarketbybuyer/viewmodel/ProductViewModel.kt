@@ -68,14 +68,14 @@ class ProductViewModel  @Inject constructor(private val api : ApiService) : View
 
     }
 
-    private val livedatapershop : MutableLiveData<List<DataPerShop>> = MutableLiveData()
-    val datapershop : LiveData<List<DataPerShop>> = livedatapershop
+    private val livedatapershop : MutableLiveData<List<DataAllProduct>> = MutableLiveData()
+    val datapershop : LiveData<List<DataAllProduct>> = livedatapershop
 
     fun getproductpershop(search : String){
-        api.getpershopname(search).enqueue(object : Callback<GetProductspershop>{
+        api.getpershopname(search).enqueue(object : Callback<AllProductResponse>{
             override fun onResponse(
-                call: Call<GetProductspershop>,
-                response: Response<GetProductspershop>
+                call: Call<AllProductResponse>,
+                response: Response<AllProductResponse>
             ) {
                 if (response.isSuccessful){
                     livedatapershop.value = response.body()!!.data
@@ -85,7 +85,7 @@ class ProductViewModel  @Inject constructor(private val api : ApiService) : View
                 }
             }
 
-            override fun onFailure(call: Call<GetProductspershop>, t: Throwable) {
+            override fun onFailure(call: Call<AllProductResponse>, t: Throwable) {
                 Log.e("ProductViewModel", "Data Per Shop Per Null")
             }
 

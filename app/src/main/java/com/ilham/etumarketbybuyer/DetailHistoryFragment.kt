@@ -41,26 +41,43 @@ class DetailHistoryFragment : Fragment() {
         val IdProduct = arguments?.getString("productsid")
 
 
-        binding.btnUpdateStatus.setOnClickListener {
-            val selectedStatus = when (binding.rgStatusPesanan.checkedRadioButtonId) {
-                R.id.pending -> "Pending"
-                R.id.paid -> "Paid"
-                R.id.Ondelivery -> "On Delivery"
-                R.id.Delivered -> "Delivered"
-                R.id.Expired -> "Expired"
-                R.id.Failed -> "Failed"
-                else -> {
-                    // If nothing is selected, show an error message and return
-                    Toast.makeText(requireContext(), "Please select a status", Toast.LENGTH_SHORT)
-                        .show()
-                    return@setOnClickListener
+        historyVm.datahistory.observe(viewLifecycleOwner){history->
+            history.forEach {
+                if (it.status == "Paid"){
+
+                    binding.rgStatusPesanan.visibility = View.VISIBLE
+                    binding.btnUpdateStatus.visibility = View.VISIBLE
+
+                    binding.btnUpdateStatus.setOnClickListener {
+                        val selectedStatus = when (binding.rgStatusPesanan.checkedRadioButtonId) {
+                            R.id.terimapesanan -> "Selesai"
+                            R.id.Dibatalkan -> "Dibatalkan"
+                            else -> {
+                                // If nothing is selected, show an error message and return
+                                Toast.makeText(requireContext(), "Please select a status", Toast.LENGTH_SHORT)
+                                    .show()
+                                return@setOnClickListener
+                            }
+                        }
+
+                        val postupdate = PostUpdateStatus(kodetransaction!!,IdProduct!!, selectedStatus)
+
+                        historyVm.updateStatus(token, postupdate)
+                    }
+                }else{
+                    binding.rgStatusPesanan.visibility = View.GONE
+                    binding.btnUpdateStatus.visibility = View.GONE
+
+                    // Show a message that only Paid users can update status
+                    binding.btnUpdateStatus.setOnClickListener {
+                        Toast.makeText(requireContext(), "Only Paid users can update status", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
-
-            val postupdate = PostUpdateStatus(kodetransaction!!,IdProduct!!, selectedStatus)
-
-            historyVm.updateStatus(token, postupdate)
         }
+
+
+
 
         historyVm.dataupdatestatus.observe(viewLifecycleOwner){
             if (it.message == "Berhasil update status transaksi"){
@@ -80,39 +97,31 @@ class DetailHistoryFragment : Fragment() {
     private fun observeDetailProduct(kodetransaction: String?, productId: String?) {
         historyVm.datahistory.observe(viewLifecycleOwner) { listDataPesanan ->
             listDataPesanan.forEach { dataPesanan ->
+                // Memeriksa apakah kode transaksi cocok
+                if (dataPesanan.kodeTransaksi == kodetransaction) {
+                    dataPesanan.products.forEach { product ->
+                        // Memeriksa apakah productID cocok
+                        if (product.productID.id == productId) {
+                            binding.tvNamaproductdetail.text = "Nama Produk : ${product.productID.nameProduct}"
+                            binding.tvCategory.text = "Kategori : ${product.productID.category}"
+                            binding.tvQuantity.text = "Jumlah Barang : ${product.quantity}"
+                            binding.tvHarga.text = "Harga : ${product.productID.price}"
 
-                dataPesanan.products.forEach { products->
-                    if (products.productID.id == productId) {
-                        binding.tvTotalharga.text = dataPesanan.total.toString()
-
-                        dataPesanan.products.forEach { product ->
-
-                            binding.tvNamaproductdetail.text = product.productID.nameProduct
-                            binding.tvCategory.text = product.productID.category
-                            binding.tvQuantity.text = product.quantity.toString()
-                            binding.tvHarga.text = product.productID.price.toString()
+                            val quantity = product.quantity
+                            val harga = product.productID.price
+                            val totalharga = quantity * harga
+                            binding.tvTotalharga.text = "Total Harga : ${totalharga}"
 
                             Glide.with(requireContext())
                                 .load("https://7895jr9m-3000.asse.devtunnels.ms/uploads/${product.productID.image}")
                                 .into(binding.ivProductimagedetail)
-
-
                         }
-
-
-
                     }
                 }
-
-
             }
         }
-
-
-
-
-
     }
+
 
 
 }

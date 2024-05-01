@@ -8,9 +8,10 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.ilham.etumarketbybuyer.databinding.ItemProductBinding
+import com.ilham.etumarketbybuyer.model.product.allproduct.DataAllProduct
 import com.ilham.etumarketbybuyer.model.product.productshopname.DataPerShop
 
-class ShopAdapter(private val listshop : List<DataPerShop>) : RecyclerView.Adapter<ShopAdapter.ViewHolder>() {
+class ShopAdapter(private val listshop : List<DataAllProduct>) : RecyclerView.Adapter<ShopAdapter.ViewHolder>() {
     class ViewHolder (var binding : ItemProductBinding):RecyclerView.ViewHolder(binding.root){
 
 
@@ -29,9 +30,8 @@ class ShopAdapter(private val listshop : List<DataPerShop>) : RecyclerView.Adapt
 
         holder.binding.btnDetail.setOnClickListener {
             var detail = Bundle()
-            var id = listshop[position].id
+            detail.putParcelable("detail", listshop[position])
 
-            detail.putString("detail", id)
             Navigation.findNavController(it).navigate(R.id.detailFragment, detail)
         }
     }

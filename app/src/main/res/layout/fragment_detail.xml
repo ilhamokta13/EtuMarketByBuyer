@@ -8,13 +8,26 @@
     android:background="@color/white"
     tools:context=".DetailFragment">
 
-
-
-
-    <include
-        layout="@layout/toolbar_custom"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/teal_200"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark"
+        app:contentInsetStartWithNavigation="0dp"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Dark">
+
+        <!-- Letakkan ImageView di sini -->
+        <ImageView
+            android:id="@+id/img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginEnd="10dp"
+            android:src="@drawable/ic_baseline_favorite_24" />
+
+    </androidx.appcompat.widget.Toolbar>
+
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -138,7 +151,6 @@
                         </LinearLayout>
 
 
-
                     </LinearLayout>
 
 
@@ -178,13 +190,12 @@
                     android:textStyle="bold" />
 
 
-
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvListDetail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    tools:listitem="@layout/item_cart"
-                    android:layout_marginBottom="15dp" />
+                    android:layout_marginBottom="15dp"
+                    tools:listitem="@layout/item_cart" />
 
                 <TextView
                     android:id="@+id/tv_lokasi_toko"
@@ -209,9 +220,6 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:context=".view.DetailRumahSakitActivity" />
-
-
-
 
 
             </LinearLayout>

@@ -36,7 +36,8 @@ class HistoryViewModel @Inject constructor(private val api : ApiService) : ViewM
                             val dataHistory = DataHistory(
                                 transaction.id,
                                 transaction.kodeTransaksi,
-                                listOf(product), // Menggunakan listOf(product) untuk menambahkan produk ke dalam list products
+                                listOf(product),
+                                transaction.status,// Menggunakan listOf(product) untuk menambahkan produk ke dalam list products
                                 transaction.total,
                                 transaction.user,
                                 transaction.v  // Memastikan properti __v juga disertakan jika diperlukan

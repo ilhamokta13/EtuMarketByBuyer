@@ -8,21 +8,27 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.viewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.ilham.etumarketbybuyer.database.BuyerDatabase
+import com.ilham.etumarketbybuyer.database.FavoriteBuyer
 
 import com.ilham.etumarketbybuyer.databinding.FragmentFavoriteBinding
 import com.ilham.etumarketbybuyer.model.product.allproduct.DataAllProduct
 import com.ilham.etumarketbybuyer.viewmodel.FavoriteViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class FavoriteFragment : Fragment() {
   lateinit var binding : FragmentFavoriteBinding
-    private lateinit var buyerAdapter: BuyerAdapter
+    private lateinit var favoriteBuyerAdapter: FavoriteBuyerAdapter
     private val favoriteViewModel: FavoriteViewModel by viewModels()
-//    private var mDBnew: BuyerDatabase? = null
+    private var mDBnew: BuyerDatabase? = null
 
 
     override fun onCreateView(
@@ -36,8 +42,8 @@ class FavoriteFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        buyerAdapter = BuyerAdapter(ArrayList())
-//        mDBnew = BuyerDatabase.getInstance(requireContext())
+        favoriteBuyerAdapter = FavoriteBuyerAdapter(requireActivity(),ArrayList())
+        mDBnew = BuyerDatabase.getInstance(requireContext())
 
 //       buyerAdapter.onClickArt = {
 //            val bundle = Bundle().apply {
@@ -51,23 +57,49 @@ class FavoriteFragment : Fragment() {
 //
 //        }
 
+
+        binding.rvFav.layoutManager = GridLayoutManager(context, 2)
+        binding.rvFav.adapter = favoriteBuyerAdapter
+
+        favoriteViewModel.getAllCartPopular()
+
+
+        favoriteViewModel.getliveDataCartfav().observe(viewLifecycleOwner, Observer {
+            favoriteBuyerAdapter.setDataUser(it as ArrayList<FavoriteBuyer>)
+        })
+
+        binding.img.setOnClickListener {
+            findNavController().navigate(R.id.action_favoriteFragment_to_homeFragment2)
+        }
+
     }
 
 
-//    override fun onResume() {
-//        super.onResume()
-//        favoriteViewModel.getAllBuyer()
-//        favoriteViewModel.getliveData().observe(this) { users ->
+    override fun onResume() {
+        super.onResume()
+        GlobalScope.launch {
+            val listdata = mDBnew?.buyerDao()!!.getFavorit()
+            activity?.runOnUiThread {
+                favoriteBuyerAdapter= FavoriteBuyerAdapter(requireActivity(),listdata)
+                binding.rvFav.layoutManager = GridLayoutManager(context, 2)
+                binding.rvFav.adapter = favoriteBuyerAdapter
+
+
+            }
+        }
+
+//        favoriteViewModel.getliveDataCartfav().observe(viewLifecycleOwner){users->
+//            favoriteViewModel.getAllCartPopular()
 //            users?.let {
-//                val data = favoriteViewModel.getAllBuyer()
-//                buyerAdapter.setDataUser(data)
-//                binding.rvFav.adapter = buyerAdapter
-//                val layoutManager = GridLayoutManager(context, 2)
-//                binding.rvFav.layoutManager = layoutManager
+//                val data = mDBnew?.buyerDao()!!.getFavorit()
+//               favoriteBuyerAdapter.setDataUser(data)
+//                binding.rvFav.adapter = favoriteBuyerAdapter
+//                binding.rvFav.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 //
 //            }
+//
 //        }
-//    }
+    }
 
 
 

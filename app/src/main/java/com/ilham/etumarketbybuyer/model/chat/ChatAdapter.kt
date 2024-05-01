@@ -1,13 +1,17 @@
 package com.ilham.etumarketbybuyer.model.chat
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.text.util.Linkify
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.RecyclerView
@@ -24,10 +28,21 @@ class ChatAdapter(private val context: Context, private val chatList:ArrayList<C
     private val MESSAGE_TYPE_LEFT = 0
     private val MESSAGE_TYPE_RIGHT = 1
     var firebaseUser: FirebaseUser? = null
+    private var selectedMessagePosition: Int = RecyclerView.NO_POSITION
+
+
+
+
+
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val txtUserName: TextView = view.findViewById(R.id.tvMessage)
         val imgUser: CircleImageView = view.findViewById(R.id.userImage)
         val imgMessage: ImageView = view.findViewById(R.id.imgMessage) // Add ImageView for images
+
+
+
+
+
 
     }
 
@@ -41,6 +56,8 @@ class ChatAdapter(private val context: Context, private val chatList:ArrayList<C
                 LayoutInflater.from(parent.context).inflate(R.layout.item_left, parent, false)
             return ViewHolder(view)
         }
+
+
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -50,6 +67,33 @@ class ChatAdapter(private val context: Context, private val chatList:ArrayList<C
             holder.txtUserName.visibility = View.VISIBLE
             holder.imgMessage.visibility = View.GONE
             holder.txtUserName.text = chat.message
+
+            holder.txtUserName.setOnLongClickListener {
+                // Salin teks pesan ke Clipboard
+                copyToClipboard(chat.message)
+                // Tampilkan pesan toast bahwa pesan telah disalin
+                showToast("Pesan disalin")
+                true
+            }
+
+            // Tambahkan Linkify untuk mendeteksi tautan dalam teks dan membuatnya dapat diklik
+            Linkify.addLinks(holder.txtUserName, Linkify.WEB_URLS)
+
+            holder.txtUserName.setOnClickListener {
+                // Dapatkan teks dari TextView menggunakan parameter lambda
+                val url = holder.txtUserName.text.toString()
+                // Buat Intent untuk membuka tautan dalam aplikasi lain
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                // Periksa apakah ada aplikasi yang dapat menangani tautan
+                if (intent.resolveActivity(context.packageManager) != null) {
+                    // Buka tautan dalam aplikasi lain
+                    context.startActivity(intent)
+                } else {
+                    // Jika tidak ada aplikasi yang dapat menangani tautan, buka tautan di browser default
+                    showToast("Tidak ada aplikasi yang dapat menangani tautan")
+                }
+            }
+
         } else {
             // Image message
             holder.txtUserName.visibility = View.GONE
@@ -62,11 +106,36 @@ class ChatAdapter(private val context: Context, private val chatList:ArrayList<C
 
             }
         }
+
+
+
+
+
+
+
+
 //        Glide.with(context).load(chat.profileImage).placeholder(R.drawable.profile_image).into(holder.imgUser)
+
+
     }
+
+
+
 
     override fun getItemCount(): Int {
         return chatList.size
+    }
+
+    // Fungsi untuk menyalin teks ke Clipboard
+    private fun copyToClipboard(text: String) {
+        val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clipData = ClipData.newPlainText("text", text)
+        clipboardManager.setPrimaryClip(clipData)
+    }
+
+    // Fungsi untuk menampilkan pesan toast
+    private fun showToast(message: String) {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -90,11 +159,9 @@ class ChatAdapter(private val context: Context, private val chatList:ArrayList<C
         context.startActivity(intent)
     }
 
-    private fun openImageWithExternalApp(imageFile: File) {
-        val intent = Intent(Intent.ACTION_VIEW)
-        val uri = FileProvider.getUriForFile(context, context.packageName + ".provider", imageFile)
-        intent.setDataAndType(uri, "image/*")
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        context.startActivity(intent)
-    }
+
+
+
+
+
 }

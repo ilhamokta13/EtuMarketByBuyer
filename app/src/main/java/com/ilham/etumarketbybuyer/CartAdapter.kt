@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -15,7 +16,7 @@ import com.ilham.etumarketbybuyer.model.cart.usercart.Product
 import com.ilham.etumarketbybuyer.model.cart.usercart.ProductID
 import com.ilham.etumarketbybuyer.viewmodel.CartViewModel
 
-    class CartAdapter(private var listCart : List<Product>, var context : Context, var cartVm : CartViewModel, var token : String) : RecyclerView.Adapter<CartAdapter.ViewHolder>() {
+    class CartAdapter(private var listCart : List<Product>, var context : Context, var cartVm : CartViewModel, var token : String, var lifecycleOwner: LifecycleOwner) : RecyclerView.Adapter<CartAdapter.ViewHolder>() {
         inner class ViewHolder(val binding: ItemCartBinding) :
             RecyclerView.ViewHolder(binding.root) {
 
@@ -64,6 +65,7 @@ import com.ilham.etumarketbybuyer.viewmodel.CartViewModel
 //        }
 
 
+
         holder.binding.addJumlahCart.setOnClickListener {
             if (jumlah == 1000000){
                 Toast.makeText(context, "Produk mencapai batas maksimal", Toast.LENGTH_SHORT).show()
@@ -73,7 +75,25 @@ import com.ilham.etumarketbybuyer.viewmodel.CartViewModel
                 val dataAddCart = DataAddCart(listOf(listCart[position].productID.id), listOf(jumlah))
 
                 listCart[position].quantity = jumlah
+
+                cartVm.dataUpdateCart.observe(lifecycleOwner){
+
+                    if (it.message == "Update Cart") {
+                        listCart[position].quantity = jumlah
+                        val price = listCart[position].productID.price
+                        var jumlah = listCart[position].quantity
+
+                        val hargatotal1 = price * jumlah
+
+                        holder.binding.tvJumlahCart.text = jumlah.toString()
+
+
+                        holder.binding.cartTotal.text = "Harga Total : ${hargatotal1.toString()}"
+                    }
+
+                }
                 cartVm.updatecart(token,dataAddCart)
+
 
             }
         }
@@ -86,7 +106,26 @@ import com.ilham.etumarketbybuyer.viewmodel.CartViewModel
                 holder.binding.tvJumlahCart.text = jumlah.toString()
                 val dataAddCart = DataAddCart(listOf(listCart[position].productID.id), listOf(jumlah))
                 listCart[position].quantity = jumlah
+
+                cartVm.dataUpdateCart.observe(lifecycleOwner){
+
+                    if (it.message == "Update Cart") {
+                        listCart[position].quantity = jumlah
+                        val price = listCart[position].productID.price
+                        var jumlah = listCart[position].quantity
+
+                        val hargatotal1 = price * jumlah
+
+                        holder.binding.tvJumlahCart.text = jumlah.toString()
+
+
+                        holder.binding.cartTotal.text = "Harga Total : ${hargatotal1.toString()}"
+                    }
+
+                }
                 cartVm.updatecart(token,dataAddCart)
+
+
 
             }
         }
