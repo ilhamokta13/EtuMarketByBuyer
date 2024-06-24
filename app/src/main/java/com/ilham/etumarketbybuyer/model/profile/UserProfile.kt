@@ -5,9 +5,9 @@ import com.google.gson.annotations.SerializedName
 
 data class UserProfile(
     @SerializedName("email")
-    val email: String,
+    var email: String,
     @SerializedName("fullName")
-    val fullName: String,
+    var fullName: String,
     @SerializedName("_id")
     val id: String,
     @SerializedName("password")
@@ -17,7 +17,7 @@ data class UserProfile(
     @SerializedName("shopName")
     val shopName: String,
     @SerializedName("telp")
-    val telp: String,
+    var telp: String,
     @SerializedName("__v")
     val v: Int
 )

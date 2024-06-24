@@ -20,6 +20,8 @@ data class DataPerId(
     val nameProduct: String,
     @SerializedName("price")
     val price: Int,
+    @SerializedName("stock")
+    val stock: Int,
     @SerializedName("releaseDate")
     val releaseDate: String,
     @SerializedName("sellerID")

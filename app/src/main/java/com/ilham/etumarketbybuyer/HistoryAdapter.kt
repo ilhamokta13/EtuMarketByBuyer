@@ -13,9 +13,12 @@ import com.ilham.etumarketbybuyer.model.transaksi.riwayat.DataHistory
 
 class HistoryAdapter(var listhistory : List<DataHistory>) : RecyclerView.Adapter<HistoryAdapter.ViewHolder>() {
 
-    var filteredList: List<DataHistory> = ArrayList()
+//    var filteredList: List<DataHistory> = ArrayList()
     var redItems: MutableList<DataHistory> = mutableListOf()
     var blueItems: MutableList<DataHistory> = mutableListOf()
+    var filteredList: List<DataHistory> = listhistory
+
+   var statusFilter: String? = null
 
 
     class ViewHolder(var binding : ItemHistoryBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -31,9 +34,21 @@ class HistoryAdapter(var listhistory : List<DataHistory>) : RecyclerView.Adapter
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val dataItem = listhistory[position]
 
-        val item = if (position < blueItems.size) blueItems[position] else redItems[position - blueItems.size]
+        val item = filteredList[position]
+
+//        val item = if (position < blueItems.size) blueItems[position] else redItems[position - blueItems.size]
 
         val product =  item.products.firstOrNull() ?: return
+
+
+
+        // Filter berdasarkan status
+        fun filterstatus(){
+            if (statusFilter!!.isNotEmpty() && product.status != statusFilter) {
+                return
+            }
+        }
+
 
             val namaproduk = product.productID.nameProduct
             holder.binding.RiwayatName.text = "Nama Produk :  $namaproduk"
@@ -44,7 +59,7 @@ class HistoryAdapter(var listhistory : List<DataHistory>) : RecyclerView.Adapter
             holder.binding.RiwayatJumlah.text = "Jumlah : $jumlah"
 
             val status = product.status
-            holder.binding.StatusPengiriman.text = "Status Pengiriman: $status"
+            holder.binding.StatusPengiriman.text = "Status Pesanan: $status"
 
             val totalPrice = jumlah * price
 
@@ -68,13 +83,28 @@ class HistoryAdapter(var listhistory : List<DataHistory>) : RecyclerView.Adapter
                 Navigation.findNavController(it).navigate(R.id.action_historyFragment2_to_detailHistoryFragment, bundle)
             }
 
+//            holder.binding.shareloc.setOnClickListener {
+//                val kodetransaksi = item.kodeTransaksi
+//                val bundle = Bundle()
+//                bundle.putString("kodetransac", kodetransaksi)
+//                Navigation.findNavController(it).navigate(R.id.action_historyFragment2_to_pengirimanFragment, bundle)
+//            }
 
-            if (product.status == "Selesai") {
-                holder.binding.itemlist.setBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.red))
-            } else {
-                // If not delivered, set the default background color
-                holder.binding.itemlist.setBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.blue))
-            }
+
+//            if (product.status == "Selesai") {
+//                holder.binding.itemlist.setBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.red))
+//            } else {
+//                // If not delivered, set the default background color
+//                holder.binding.itemlist.setBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.blue))
+//            }
+
+
+
+
+
+
+
+
 
 
 
@@ -91,39 +121,70 @@ class HistoryAdapter(var listhistory : List<DataHistory>) : RecyclerView.Adapter
 
 
     override fun getItemCount(): Int {
-        return blueItems.size + redItems.size
+        return filteredList.size
     }
 
-    fun filter(text: String) {
-        listhistory = if (text.isEmpty()) {
-            filteredList
-        } else {
-            val tempList = ArrayList<DataHistory>()
-            for (item in filteredList) {
-                if (item.products.firstOrNull()?.productID!!.nameProduct!!
-                        .contains(text, ignoreCase = true)
-                ) {
-                    tempList.add(item)
-                }
-            }
-            tempList
+//    fun filter(text: String) {
+//        listhistory = if (text.isEmpty()) {
+//            filteredList
+//        } else {
+//            val tempList = ArrayList<DataHistory>()
+//            for (item in filteredList) {
+//                if (item.products.firstOrNull()?.productID!!.nameProduct!!
+//                        .contains(text, ignoreCase = true)
+//                ) {
+//                    tempList.add(item)
+//                }
+//            }
+//            tempList
+//        }
+//        separateItemsByColor()
+//        notifyDataSetChanged()
+//    }
+//
+//    // Memisahkan item berdasarkan warna
+//    fun separateItemsByColor() {
+//        redItems.clear()
+//        blueItems.clear()
+//        for (item in listhistory) {
+//            if (item.products.firstOrNull()?.status == "Selesai") {
+//                redItems.add(item)
+//            } else {
+//                blueItems.add(item)
+//            }
+//        }
+//    }
+//
+//    fun setStatusFilter(status: String) {
+//        statusFilter = status
+//        notifyDataSetChanged()
+//    }
+fun filter(text: String, status: String?) {
+    statusFilter = status
+    filteredList = if (text.isEmpty()) {
+        listhistory.filter { item ->
+            status == null || item.products.any { product -> product.status == status }
         }
-        separateItemsByColor()
-        notifyDataSetChanged()
+    } else {
+        listhistory.filter { item ->
+            (status == null || item.products.any { product ->
+                product.status == status && product.productID.nameProduct.contains(
+                    text,
+                    ignoreCase = true
+                )
+            })
+        }
+    }
+    notifyDataSetChanged()
+}
+
+    fun setAllHistory(history: List<DataHistory>) {
+        listhistory = history
+        filter("", statusFilter) // Terapkan filter yang sudah ada
     }
 
-    // Memisahkan item berdasarkan warna
-    fun separateItemsByColor() {
-        redItems.clear()
-        blueItems.clear()
-        for (item in listhistory) {
-            if (item.products.firstOrNull()?.status == "Selesai") {
-                redItems.add(item)
-            } else {
-                blueItems.add(item)
-            }
-        }
-    }
+
+
 
 
 

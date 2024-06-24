@@ -17,6 +17,9 @@
     <string name="label_sign_in">Sign In</string>
     <string name="type_message">Type Message</string>
 
+    <string name="channel_name">Nama Saluran</string>
+    <string name="channel_description">Deskripsi Saluran</string>
+
     <string-array name="MenuPembayaran">
         <item>Ovo</item>
         <item>LinkAja</item>
@@ -29,4 +32,14 @@
         <item>Customer</item>
 
     </string-array>
+
+    <string-array name="status_array">
+        <item>Dikemas</item>
+        <item>Dikirim</item>
+        <item>Selesai</item>
+        <item>Dibatalkan</item>
+        <item>CashOnDelivery</item>
+        <item>Pending</item>
+    </string-array>
+
 </resources>

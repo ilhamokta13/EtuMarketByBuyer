@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -14,25 +13,19 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.ViewModelProvider
-import com.ilham.etumarketbybuyer.databinding.FragmentPaymentBinding
 import com.ilham.etumarketbybuyer.databinding.FragmentPaymentMidtransBinding
-import com.ilham.etumarketbybuyer.model.cart.usercart.Product
 import com.ilham.etumarketbybuyer.model.transaksi.MidtransResponse
-import com.ilham.etumarketbybuyer.model.transaksi.PostTransaction
 import com.ilham.etumarketbybuyer.viewmodel.CartViewModel
 import com.ilham.etumarketbybuyer.viewmodel.PaymentViewModel
 
 import com.midtrans.sdk.corekit.callback.TransactionFinishedCallback
-import com.midtrans.sdk.corekit.core.MidtransSDK
 import com.midtrans.sdk.corekit.core.TransactionRequest
 import com.midtrans.sdk.corekit.core.themes.CustomColorTheme
 import com.midtrans.sdk.corekit.models.BillingAddress
 import com.midtrans.sdk.corekit.models.CustomerDetails
-import com.midtrans.sdk.corekit.models.ItemDetails
 import com.midtrans.sdk.corekit.models.ShippingAddress
 import com.midtrans.sdk.uikit.SdkUIFlowBuilder
 import com.midtrans.sdk.uikit.api.model.TransactionResult
-import com.midtrans.sdk.uikit.external.UiKitApi
 import com.midtrans.sdk.uikit.internal.util.UiKitConstants
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -80,10 +73,8 @@ class PaymentMidtransFragment : Fragment() {
 
 
 
-
-
         SdkUIFlowBuilder.init()
-            .setClientKey("SB-Mid-client-o40DgvDVP2nSe_nD")
+            .setClientKey("Mid-client-MwQBPUpVbPpDzRbT")
             .setContext(context)
             .setTransactionFinishedCallback(TransactionFinishedCallback { result ->
 
@@ -117,19 +108,15 @@ class PaymentMidtransFragment : Fragment() {
 
 
 //        binding.btnbayar.setOnClickListener {
-//            val getData = arguments?.getSerializable("checkout") as Product
-//            idProductCart = getData.productID.id
-//            val jmlcart = getData.quantity
+//            val getData =  arguments?.getParcelable<DataAllProduct>("detail") as DataAllProduct
+//            idProductCart = getData.id
 //
-//            val namaproduk = getData.productID.nameProduct
-
-
-//            val namapengguna = getData.product
+//            val namapengguna = getData.productID.
 //            val email = getData.productID.sellerID.email
 //            val phone = getData.productID.sellerID.telp
-
+//
 //        val belanja = jmlcart
-
+//
 //        val harga = getData.productID.price
 //
 //            val harga = getData.productID.price
@@ -172,8 +159,8 @@ class PaymentMidtransFragment : Fragment() {
 //
 //            MidtransSDK.getInstance().transactionRequest = transactionRequest
 //            MidtransSDK.getInstance().startPaymentUiFlow(context)
-
-
+//
+//
 //            val tokenmidtrans = paymentVm.midtransResponse.value?.token
 //            if (tokenmidtrans != null) {
 //                // Lakukan sesuatu dengan token, misalnya menyimpan atau menggunakan untuk keperluan lain

@@ -26,6 +26,7 @@ class ShopAdapter(private val listshop : List<DataAllProduct>) : RecyclerView.Ad
         holder.binding.tvProductName.text = listshop[position].nameProduct
         holder.binding.tvProductCategory.text = listshop[position].category
         holder.binding.tvProductPrice.text = listshop[position].price.toString()
+        holder.binding.tvStoreName.text = listshop[position].sellerID.shopName
         Glide.with(holder.itemView).load("https://7895jr9m-3000.asse.devtunnels.ms/uploads/${listshop[position].image}").into(holder.binding.ivProductImg)
 
         holder.binding.btnDetail.setOnClickListener {

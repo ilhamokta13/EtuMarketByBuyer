@@ -26,6 +26,9 @@
             android:layout_marginEnd="10dp"
             android:src="@drawable/ic_baseline_favorite_24" />
 
+        <!-- Letakkan ImageView di sini -->
+
+
     </androidx.appcompat.widget.Toolbar>
 
 
@@ -80,7 +83,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
-                        android:text="Rp.0"
+                        android:text="Harga Fix : "
                         android:textColor="@color/colorPrimaryDark"
                         android:textSize="16dp"
                         android:textStyle="bold" />
@@ -179,6 +182,63 @@
                     android:textColor="@color/black"
                     android:textSize="13dp" />
 
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="15dp"
+                    android:text="Stock"
+                    android:textColor="@color/black"
+                    android:textSize="15dp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tv_Stock"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="15dp"
+                    android:text="1"
+                    android:textColor="@color/black"
+                    android:textSize="13dp" />
+
+                <TextView
+                    android:id="@+id/PemilikToko"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="15dp"
+                    android:text="Pemilik Toko : "
+                    android:textColor="@color/black"
+                    android:textSize="15dp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tv_PemilikToko"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="15dp"
+                    android:text="Ilham"
+                    android:textColor="@color/black"
+                    android:textSize="13dp" />
+
+                <TextView
+                    android:id="@+id/nama_toko"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="15dp"
+                    android:text="Nama Toko :"
+                    android:textColor="@color/black"
+                    android:textSize="15dp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tv_namatoko"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="15dp"
+                    android:text="Barokah Mart"
+                    android:textColor="@color/black"
+                    android:textSize="13dp" />
+
                 <TextView
                     android:id="@+id/tv_pilihan_produk_lain"
                     android:layout_width="match_parent"
@@ -221,7 +281,25 @@
                     app:layout_constraintTop_toTopOf="parent"
                     tools:context=".view.DetailRumahSakitActivity" />
 
+                <Button
+                    android:id="@+id/tawar"
+                    android:backgroundTint="@color/teal_200"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/Btn"
+                    android:text="Tawar Harga"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="10dp" />
 
+                <Button
+                    android:id="@+id/chatpenjual"
+                    android:backgroundTint="@color/teal_200"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/Btn"
+                    android:text="Chat Penjual"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="10dp" />
             </LinearLayout>
         </ScrollView>
 
@@ -231,7 +309,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_marginStart="50dp"
+            android:layout_marginStart="5dp"
             android:layout_marginBottom="10dp"
             android:orientation="horizontal"
             android:paddingHorizontal="20dp"
@@ -253,25 +331,30 @@
             <!--            </RelativeLayout>-->
 
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
+            <Button
                 android:id="@+id/ic_cart"
-                android:layout_width="wrap_content"
+                style="@style/Btn"
+                android:layout_width="120dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
-                android:layout_marginStart="5dp"
-                android:layout_marginEnd="5dp"
-                android:backgroundTint="@color/white"
-                android:contentDescription="fav"
+                android:layout_alignParentRight="true"
+                android:layout_marginStart="0dp"
+                android:layout_marginEnd="10dp"
+                android:backgroundTint="@color/teal_200"
                 android:minWidth="40dp"
                 android:minHeight="40dp"
-                android:src="@drawable/ic_baseline_add_shopping_cart_24"
-                app:backgroundTint="@color/white" />
+                android:padding="10dp"
+                android:text="Add Cart"
+                android:textColor="@color/white"
+                android:textSize="15dp"
+                android:textStyle="bold" />
 
             <ImageButton
                 android:id="@+id/decJumlahCart"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
                 android:background="@drawable/background_border_primary_purple"
                 android:minWidth="40dp"
                 android:minHeight="40dp"
@@ -294,6 +377,7 @@
                 android:id="@+id/addJumlahCart"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
                 android:background="@drawable/background_border_primary_purple"
                 android:minWidth="40dp"
                 android:minHeight="40dp"
@@ -304,8 +388,8 @@
                 android:id="@+id/fav_button"
                 android:layout_width="45dp"
                 android:layout_height="45dp"
-                android:layout_marginTop="5dp"
                 android:layout_marginStart="10dp"
+                android:layout_marginTop="3dp"
                 android:background="@drawable/ic_baseline_favorite_border_24"
                 android:focusable="false"
                 android:focusableInTouchMode="false"

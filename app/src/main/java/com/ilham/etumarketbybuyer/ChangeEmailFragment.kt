@@ -39,12 +39,18 @@ class ChangeEmailFragment : Fragment() {
 
         pref = requireActivity().getSharedPreferences("Berhasil", Context.MODE_PRIVATE)
         userVm = ViewModelProvider(this).get(UserViewModel::class.java)
+        //Mengatur SharedPreferences dan ViewModel.
+        //Mendapatkan instance pengguna saat ini dari FirebaseAuth.
+        //Mengatur visibilitas elemen UI berdasarkan keadaan.
 
         auth = FirebaseAuth.getInstance()
         val user = auth.currentUser
 
         binding.cvChangeEmailInputPass.visibility = View.VISIBLE
         binding.cvChangeEmail.visibility = View.GONE
+
+        //Tombol "Next" (btnNext) digunakan untuk memverifikasi password pengguna sebelum mengizinkan perubahan email.
+        //Jika password benar, UI akan menampilkan form untuk mengubah email.
 
         binding.btnNext.setOnClickListener {
             var pass = binding.edtChangeEmailPassword.text.toString()
@@ -75,6 +81,11 @@ class ChangeEmailFragment : Fragment() {
                 }
             }
         }
+
+        //Tombol "Change Email" (btnChangeEmail) digunakan untuk mengubah alamat email pengguna.
+        //Melakukan validasi email baru (tidak kosong dan sesuai format).
+        //Jika validasi sukses, mengubah email melalui FirebaseAuth.
+        //Mengupdate profil pengguna melalui ViewModel (updateuserprofile).
 
         binding.btnChangeEmail.setOnClickListener newEmail@{
             var newEmail = binding.edtChangeEmail.text.toString()
@@ -109,6 +120,9 @@ class ChangeEmailFragment : Fragment() {
 
     }
 
+    //Mengambil token dari SharedPreferences.
+    //Memperbarui email di backend menggunakan ViewModel.
+    //Menampilkan pesan toast jika pembaruan profil berhasil.
     fun updateuserprofile() {
 
         val token = pref.getString("token", "").toString()

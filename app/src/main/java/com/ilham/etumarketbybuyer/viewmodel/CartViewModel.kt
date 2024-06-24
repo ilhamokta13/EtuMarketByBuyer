@@ -7,12 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.ilham.etumarketbybuyer.model.cart.DataAddCart
 import com.ilham.etumarketbybuyer.model.cart.ResponseAddCart
-import com.ilham.etumarketbybuyer.model.cart.usercart.DeleteAllCartResponse
-import com.ilham.etumarketbybuyer.model.cart.usercart.GetCartResponse
-import com.ilham.etumarketbybuyer.model.cart.usercart.Product
-import com.ilham.etumarketbybuyer.model.changepass.DataChangePass
-import com.ilham.etumarketbybuyer.model.product.allproduct.DataAllProduct
-import com.ilham.etumarketbybuyer.model.transaksi.MidtransResponse
+import com.ilham.etumarketbybuyer.model.cart.usercart.*
 import com.ilham.etumarketbybuyer.network.ApiService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import retrofit2.Call
@@ -20,10 +15,25 @@ import retrofit2.Callback
 import retrofit2.Response
 import javax.inject.Inject
 
+
+
+// Anotasi ini menunjukkan bahwa CartViewModel akan dikelola oleh Hilt untuk dependency injection
+
 @HiltViewModel
+//Menunjukkan bahwa ApiService dan SharedPreferences akan diinjeksikan oleh Hilt.
 class CartViewModel @Inject constructor(private val api : ApiService,  private val sharedPreferences: SharedPreferences) : ViewModel() {
+    //liveDataCart: Variabel ini adalah MutableLiveData yang menyimpan daftar DataAddCart
+
     private val liveDataCart: MutableLiveData<List<DataAddCart>> = MutableLiveData()
+    //dataCart: Variabel ini adalah versi LiveData dari liveDataCart.
     val dataCart: LiveData<List<DataAddCart>> = liveDataCart
+
+    //liveDataCart, liveDataCartUser, liveUpdateCart, deleteCart: Variabel MutableLiveData yang digunakan untuk menyimpan data yang dapat berubah.
+    //dataCart, dataCartUser, dataUpdateCart, livedeletecart: Variabel LiveData yang hanya dapat dibaca oleh observer.
+
+    //Mengirim data cart baru ke server.
+    //Jika respons berhasil (response.isSuccessful), data yang diterima dari server disimpan ke liveDataCart.
+    //Jika gagal, error dicatat menggunakan Log.e.
 
     fun postCart(token: String, postCart: DataAddCart) {
         api.postCart("Bearer $token", postCart).enqueue(object : Callback<List<DataAddCart>> {
@@ -47,7 +57,9 @@ class CartViewModel @Inject constructor(private val api : ApiService,  private v
 
     }
 
-
+    //savecartPreferences dan getCart: Menyimpan dan mengambil jumlah item cart dari SharedPreferences.
+    //saveHargaCart dan getHargaCart: Menyimpan dan mengambil harga total cart dari SharedPreferences.
+    //saveIdCart dan getIdCart: Menyimpan dan mengambil ID cart dari SharedPreferences.
     fun savecartPreferences(cart: Int) {
         val editor = sharedPreferences.edit()
         editor.putInt("cart", cart)
@@ -81,19 +93,20 @@ class CartViewModel @Inject constructor(private val api : ApiService,  private v
     }
 
 
-    private val liveDataCartUser: MutableLiveData<List<Product>> = MutableLiveData()
-    val dataCartUser: LiveData<List<Product>> = liveDataCartUser
+    private val liveDataCartUser: MutableLiveData<List<CartProduct>> =  MutableLiveData()
+    val dataCartUser: LiveData<List<CartProduct>> = liveDataCartUser
+    //Mengambil data cart pengguna dari server.
+    //Jika respons berhasil dan data tidak null, data cart diproses dan disimpan dalam liveDataCartUser.
+    //Jika gagal, error dicatat menggunakan Log.e.
+
     fun CartUser(token: String) {
         api.getcart("Bearer $token").enqueue(object : Callback<GetCartResponse> {
-            override fun onResponse(
-                call: Call<GetCartResponse>,
-                response: Response<GetCartResponse>
-            ) {
+            override fun onResponse(call: Call<GetCartResponse>, response: Response<GetCartResponse>) {
                 if (response.isSuccessful) {
                     val responseData = response.body()
                     if (responseData != null && responseData.data != null) {
-                        val cartProducts = responseData.data.products
-                        liveDataCartUser.value = cartProducts
+                        val cartProducts = responseData.data
+                        liveDataCartUser.value = flattenCartData(responseData.data)
                     } else {
                         Log.e("CartUserViewModel", "Response body or products are null")
                     }
@@ -103,18 +116,35 @@ class CartViewModel @Inject constructor(private val api : ApiService,  private v
             }
 
             override fun onFailure(call: Call<GetCartResponse>, t: Throwable) {
-                Log.e("CartViewModel", "Null Post Data Cart")
+                Log.e("CartViewModel3", "Failed to fetch cart data: ${t.message}")
             }
-
         })
     }
+
+    //Memproses data cart dan mengubahnya menjadi daftar CartProduct.
+    //Data cart diratakan untuk menyertakan detail produk, lokasi, dan biaya pengiriman.
+
+    fun flattenCartData(dataList: List<Data>): List<CartProduct> {
+        val productList = mutableListOf<CartProduct>()
+        for (data in dataList) {
+            val latitude = data.destination.latitude
+            val longitude = data.destination.longitude
+            val shippingCost = data.shippingCost
+            for (product in data.products) {
+                productList.add(CartProduct(product, latitude, longitude, shippingCost))
+            }
+        }
+        return productList
+    }
+
 
 
     private val liveUpdateCart: MutableLiveData<ResponseAddCart> = MutableLiveData()
     val dataUpdateCart: LiveData<ResponseAddCart> = liveUpdateCart
 
-
-
+    //Mengirim data cart yang diperbarui ke server.
+    //Jika respons berhasil, data yang diperbarui disimpan ke liveUpdateCart.
+    //Jika gagal, error dicatat menggunakan Log.e.
 
     fun updatecart(token: String, UpdateCart: DataAddCart) {
         api.UpdateCart("Bearer $token", UpdateCart).enqueue(object : Callback<ResponseAddCart> {
@@ -137,7 +167,9 @@ class CartViewModel @Inject constructor(private val api : ApiService,  private v
     }
 
 
-
+    //Menghapus semua item cart dari server.
+    //Jika respons berhasil, hasil penghapusan disimpan ke deleteCart.
+    //Jika gagal, error dicatat menggunakan Log.e.
 
     private val deleteCart: MutableLiveData<DeleteAllCartResponse> = MutableLiveData()
     val livedeletecart: LiveData<DeleteAllCartResponse> = deleteCart
@@ -167,84 +199,15 @@ class CartViewModel @Inject constructor(private val api : ApiService,  private v
     }
 
 
-    fun clearCart() {
-        liveDataCartUser.value = emptyList() // Mengosongkan LiveData
-        // Implementasi untuk menghapus data dari penyimpanan lokal, jika ada
-    }
-
-
-    fun incrementQuantity(position: Int) {
-        val updatedList = dataCartUser.value?.toMutableList()
-        updatedList?.get(position)?.quantity = updatedList?.get(position)?.quantity?.plus(1) ?: 1
-        liveDataCartUser.value = updatedList!!
-
-
-    }
-
-    fun decrementQuantity(position: Int) {
-        val updatedList = dataCartUser.value?.toMutableList()
-        if (updatedList?.get(position)?.quantity ?: 0 > 0) {
-            updatedList?.get(position)?.quantity =
-                updatedList?.get(position)?.quantity?.minus(1) ?: 0
-            if (updatedList?.get(position)?.quantity == 0) {
-                updatedList?.removeAt(position)
-            }
-            liveDataCartUser.value = updatedList!!
-        }
-
-    }
-
-//    fun incrementQuantity(token: String, cartItem: List<Product>) {
-//
-//        api.UpdateCart("Bearer $token", cartItem).enqueue(object : Callback<List<DataAddCart>> {
-//            override fun onResponse(
-//                call: Call<List<DataAddCart>>,
-//                response: Response<List<DataAddCart>>
-//            ) {
-//                if (response.isSuccessful) {
-//                    liveUpdateCart.value = response.body()!!
-//                } else {
-//                    Log.e(
-//                        "CartViewModel",
-//                        "Failed to update cart item: ${response.errorBody()?.string()}"
-//                    )
-//                    // Handle error response
-//                }
-//            }
-//
-//            override fun onFailure(call: Call<List<DataAddCart>>, t: Throwable) {
-//                Log.e("CartViewModel", "Failed to update cart item: ${t.message}")
-//                // Handle failure
-//            }
-//        })
+//    fun clearCart() {
+//        liveDataCartUser.value = emptyList() // Mengosongkan LiveData
+//        // Implementasi untuk menghapus data dari penyimpanan lokal, jika ada
 //    }
+
+
+
+
 //
-//    fun decrementQuantity(token: String, cartItem: List<Product>) {
-//
-//
-//            api.UpdateCart("Bearer $token", cartItem).enqueue(object : Callback<List<DataAddCart>> {
-//                override fun onResponse(
-//                    call: Call<List<DataAddCart>>,
-//                    response: Response<List<DataAddCart>>
-//                ) {
-//                    if (response.isSuccessful) {
-//                        // Handle successful update
-//                        liveUpdateCart.value = response.body()!!
-//                    } else {
-//                        Log.e(
-//                            "CartViewModel",
-//                            "Failed to update cart item: ${response.errorBody()?.string()}"
-//                        )
-//                        // Handle error response
-//                    }
-//                }
-//
-//                override fun onFailure(call: Call<List<DataAddCart>>, t: Throwable) {
-//                    Log.e("CartViewModel", "Failed to update cart item: ${t.message}")
-//                    // Handle failure
-//                }
-//            })
-//        }
     }
 
 

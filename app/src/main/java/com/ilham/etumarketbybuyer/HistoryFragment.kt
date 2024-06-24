@@ -7,10 +7,13 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Base64
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -22,6 +25,7 @@ import com.ilham.etumarketbybuyer.viewmodel.HistoryViewModel
 import com.ilham.etumarketbybuyer.viewmodel.PaymentViewModel
 import com.ilham.etumarketbybuyer.viewmodel.ProductViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import org.json.JSONObject
 
 @AndroidEntryPoint
 class HistoryFragment : Fragment() {
@@ -31,8 +35,7 @@ class HistoryFragment : Fragment() {
     lateinit var pesananAdapter : HistoryAdapter
     lateinit var token : String
 
-    private lateinit var handler: Handler
-    private val interval: Long = 3600000 // 1 jam
+
 
 
     override fun onCreateView(
@@ -56,19 +59,18 @@ class HistoryFragment : Fragment() {
 
 
 
-        // Inisialisasi handler
-        handler = Handler(Looper.getMainLooper())
+
 
         getHistory(token)
 
-        startRepeatingTask()
+
 
 
         binding.etSearchProduct.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                pesananAdapter.filter(s.toString())
+                pesananAdapter.filter(s.toString(), binding.statusFilterSpinner.selectedItem.toString())
             }
 
             override fun afterTextChanged(s: Editable?) {}
@@ -80,12 +82,29 @@ class HistoryFragment : Fragment() {
         }
 
 
+        binding.statusFilterSpinner.adapter = ArrayAdapter.createFromResource(
+            requireContext(),
+            R.array.status_array,
+            android.R.layout.simple_spinner_item
+        )
 
-        if (pref.getString("token", "")!!.isEmpty()) {
+        binding.statusFilterSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                val status = parent.getItemAtPosition(position).toString()
+                pesananAdapter.filter(binding.etSearchProduct.text.toString(), status)
+//                pesananAdapter.filter(status)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {
+                // Do nothing
+            }
+        }
+
+        if (token.isEmpty() || isTokenExpired(token)) {
             binding.rvListHistory.visibility = View.GONE
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Login")
-                .setMessage("Anda Belum Login")
+                .setMessage("Your session has expired. Please login again.")
                 .setCancelable(false)
                 .setNegativeButton("Cancel") { dialog, which ->
                     // Respond to negative button press
@@ -96,10 +115,14 @@ class HistoryFragment : Fragment() {
                     findNavController().navigate(R.id.action_historyFragment2_to_loginFragment)
                 }
                 .show()
-        } else if (pref.getString("token", "")!!.isNotEmpty()) {
-
+        } else {
             getHistory(token)
         }
+
+
+
+
+
     }
 
     fun getHistory(token:String){
@@ -109,9 +132,16 @@ class HistoryFragment : Fragment() {
             pesananAdapter.notifyDataSetChanged()
            pesananAdapter.filteredList = it
            pesananAdapter.listhistory = it
+            pesananAdapter.setAllHistory(it)
 
-           // Separate items by color before updating the UI
-           pesananAdapter.separateItemsByColor()
+            it.forEach { history->
+               pesananAdapter.filter("", history.status)
+            }
+
+//            pesananAdapter.filter("", it)
+
+            // Separate items by color before updating the UI
+//           pesananAdapter.separateItemsByColor()
            // Notify adapter about the changes
            pesananAdapter.notifyDataSetChanged()
 
@@ -125,18 +155,7 @@ class HistoryFragment : Fragment() {
     }
 
 
-    private fun startRepeatingTask() {
-        // Jalankan runnable setiap interval waktu
-        handler.postDelayed(object : Runnable {
-            override fun run() {
-                // Panggil fungsi untuk meminta pengguna untuk login kembali
-                promptUserForLogin()
 
-                // Ulangi pengulangan
-                handler.postDelayed(this, interval)
-            }
-        }, interval)
-    }
 
 
 
@@ -159,17 +178,23 @@ class HistoryFragment : Fragment() {
             .show()
     }
 
-    private fun stopRepeatingTask() {
-        // Hentikan pengulangan jika handler belum diinisialisasi
-        handler.removeCallbacksAndMessages(null)
-    }
 
-    private fun promptUserForLogin() {
-        // Cek apakah pengguna telah login
-        if (pref.getString("token", "")!!.isEmpty()) {
-            // Jika belum login, tampilkan dialog login
-            showLoginDialog()
+
+
+
+    fun isTokenExpired(token: String): Boolean {
+        try {
+            val split = token.split(".")
+            val decodedBytes = Base64.decode(split[1], Base64.URL_SAFE)
+            val decodedString = String(decodedBytes, Charsets.UTF_8)
+            val jsonObject = JSONObject(decodedString)
+            val exp = jsonObject.getLong("exp")
+            val currentTime = System.currentTimeMillis() / 1000
+            return currentTime > exp
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
+        return true // If there's an error decoding the token, assume it's expired.
     }
 }
 

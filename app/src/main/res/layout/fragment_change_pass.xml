@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="20dp"
-        android:text="Reset Password"
+        android:text="Change Password"
         android:textColor="@color/black"
         android:textSize="26sp"
         android:textStyle="bold"

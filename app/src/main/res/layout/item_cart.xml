@@ -76,14 +76,14 @@
                     android:textColor="@color/black"
                     android:fontFamily="@font/metropolis_semibold" />
 
-<!--                <TextView-->
-<!--                    android:id="@+id/btnEditJumlahCart"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_below="@+id/tvJumlahProductCart"-->
-<!--                    android:layout_toRightOf="@+id/imgProductCart"-->
-<!--                    android:text="Ubah Jumlah Cart?"-->
-<!--                    android:textColor="@color/black" />-->
+                <!--                <TextView-->
+                <!--                    android:id="@+id/btnEditJumlahCart"-->
+                <!--                    android:layout_width="wrap_content"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:layout_below="@+id/tvJumlahProductCart"-->
+                <!--                    android:layout_toRightOf="@+id/imgProductCart"-->
+                <!--                    android:text="Ubah Jumlah Cart?"-->
+                <!--                    android:textColor="@color/black" />-->
 
                 <LinearLayout
                     android:layout_width="wrap_content"

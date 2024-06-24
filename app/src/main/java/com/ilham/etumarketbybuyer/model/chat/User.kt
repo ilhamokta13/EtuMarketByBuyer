@@ -4,5 +4,5 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import java.io.Serializable
 
-
-data class User( var fullname :String = "", var profileImage:String = "", var userId:String = "" )
+@Parcelize
+data class User( var fullname :String = "", var profileImage:String = "", var userId:String = "" ) :Parcelable

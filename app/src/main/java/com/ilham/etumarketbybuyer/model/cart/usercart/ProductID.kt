@@ -2,7 +2,6 @@ package com.ilham.etumarketbybuyer.model.cart.usercart
 
 
 import com.google.gson.annotations.SerializedName
-import java.io.Serializable
 
 data class ProductID(
     @SerializedName("category")
@@ -27,4 +26,4 @@ data class ProductID(
     val sellerID: String,
     @SerializedName("__v")
     val v: Int
-):Serializable
+)

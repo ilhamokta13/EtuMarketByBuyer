@@ -9,7 +9,11 @@ import com.ilham.etumarketbybuyer.model.status.ResponseUpdateStatus
 import com.ilham.etumarketbybuyer.model.transaksi.riwayat.DataHistory
 import com.ilham.etumarketbybuyer.model.transaksi.riwayat.GetRiwayatResponse
 import com.ilham.etumarketbybuyer.network.ApiService
+import com.ilham.etumarketbybuyer.pengiriman.PengirimanResponse
+import com.ilham.etumarketbybuyer.pengiriman.PostPengiriman
 import dagger.hilt.android.lifecycle.HiltViewModel
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -63,26 +67,45 @@ class HistoryViewModel @Inject constructor(private val api : ApiService) : ViewM
     private val liveUpdateStatus : MutableLiveData<ResponseUpdateStatus> = MutableLiveData()
     val dataupdatestatus : LiveData<ResponseUpdateStatus> = liveUpdateStatus
 
-    fun updateStatus(token: String, postUpdateStatus: PostUpdateStatus) {
-        api.poststatus("Bearer $token", postUpdateStatus).enqueue(object : Callback<ResponseUpdateStatus>{
-            override fun onResponse(
-                call: Call<ResponseUpdateStatus>,
-                response: Response<ResponseUpdateStatus>
-            ) {
+    fun updateStatus(token: String, kode_transaksi: RequestBody, image: MultipartBody.Part, productID: RequestBody, status: RequestBody) {
+        api.poststatus("Bearer $token", kode_transaksi, image, productID, status).enqueue(object : Callback<ResponseUpdateStatus> {
+            override fun onResponse(call: Call<ResponseUpdateStatus>, response: Response<ResponseUpdateStatus>) {
                 if (response.isSuccessful) {
                     liveUpdateStatus.value = response.body()
                 } else {
-                    Log.e("AdminViewMo2", "${response.errorBody()?.string()}")
-
+                    Log.e("HistoryViewModel", "${response.errorBody()?.string()}")
                 }
             }
 
             override fun onFailure(call: Call<ResponseUpdateStatus>, t: Throwable) {
-                Log.e("AdminViewMo", "Null Post Update Status")
+                Log.e("HistoryViewModel", "Null Post Update Status")
+            }
+        })
+    }
+
+    private val livepostlocpengiriman : MutableLiveData<PengirimanResponse> = MutableLiveData()
+    val datalocpengiriman : LiveData<PengirimanResponse> = livepostlocpengiriman
+
+    fun kirimlokasi(token: String, postPengiriman: PostPengiriman){
+        api.kirimlokasibarang("Bearer $token", postPengiriman).enqueue(object : Callback<PengirimanResponse>{
+            override fun onResponse(
+                call: Call<PengirimanResponse>,
+                response: Response<PengirimanResponse>
+            ) {
+                if (response.isSuccessful) {
+                    livepostlocpengiriman.value = response.body()
+                } else {
+                    Log.e("SharelocViewModel", "${response.errorBody()?.string()}")
+                }
+            }
+
+            override fun onFailure(call: Call<PengirimanResponse>, t: Throwable) {
+                Log.e("sharelocVm", "Null Post Update Shareloc")
             }
 
         })
     }
+
 
 
 }

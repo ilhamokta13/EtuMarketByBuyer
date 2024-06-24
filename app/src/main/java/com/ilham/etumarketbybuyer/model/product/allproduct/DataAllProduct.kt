@@ -30,3 +30,5 @@ data class DataAllProduct(
     @SerializedName("__v")
     val v: Int
 ):Parcelable
+
+

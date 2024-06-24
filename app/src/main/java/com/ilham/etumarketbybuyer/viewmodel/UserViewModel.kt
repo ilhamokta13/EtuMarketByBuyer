@@ -2,8 +2,7 @@ package com.ilham.etumarketbybuyer.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.*
-import com.ilham.etumarketbybuyer.model.changepass.ChangePasswordResponse
-import com.ilham.etumarketbybuyer.model.changepass.DataChangePass
+import com.ilham.etumarketbybuyer.model.changepass.*
 import com.ilham.etumarketbybuyer.model.login.LoginBody
 import com.ilham.etumarketbybuyer.model.login.ResponseLogin
 import com.ilham.etumarketbybuyer.model.profile.DataProfile
@@ -31,8 +30,8 @@ class UserViewModel @Inject constructor(private val api : ApiService, ) : ViewMo
     private val _responselogin : MutableLiveData<ResponseLogin> = MutableLiveData()
     val responselogin : LiveData<ResponseLogin> = _responselogin
 
-    fun postregist(fullName : String, email : String, password : String, telp : String, role : String,){
-        api.register(fullName, email, password, telp, role,).enqueue(object :
+    fun postregist(fullName : String, email : String, password : String, telp : String, role : String,shopName: String){
+        api.register(fullName, email, password, telp, role,shopName).enqueue(object :
             Callback<ResponseRegister> {
             override fun onResponse(
                 call: Call<ResponseRegister>,
@@ -80,6 +79,55 @@ class UserViewModel @Inject constructor(private val api : ApiService, ) : ViewMo
         })
     }
 
+
+
+    private val _responseforgotpass : MutableLiveData<ResponseForgotPass> = MutableLiveData()
+    val responseforgotpass : LiveData<ResponseForgotPass> = _responseforgotpass
+    fun forgotpass(forgotPass: PostForgotPass){
+        api.forgotpass(forgotPass).enqueue(object : Callback<ResponseForgotPass>{
+            override fun onResponse(
+                call: Call<ResponseForgotPass>,
+                response: Response<ResponseForgotPass>
+            ) {
+                if (response.isSuccessful) {
+                    _responseforgotpass.value = response.body()
+
+                } else {
+                    Log.e("ForgotPass", "${response.errorBody()?.string()}")
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseForgotPass>, t: Throwable) {
+                Log.e("ForgotPass2", "Cannot get data")
+            }
+
+        })
+    }
+
+
+    private val _responsenewpass : MutableLiveData<ResponseNewPass> = MutableLiveData()
+    val responsenewpass : LiveData<ResponseNewPass> = _responsenewpass
+
+    fun newpassword(postNewPassword: PostNewPassword){
+        api.newpass(postNewPassword).enqueue(object : Callback<ResponseNewPass>{
+            override fun onResponse(
+                call: Call<ResponseNewPass>,
+                response: Response<ResponseNewPass>
+            ) {
+                if (response.isSuccessful) {
+                    _responsenewpass.value = response.body()
+
+                } else {
+                    Log.e("ResponsePassword", "${response.errorBody()?.string()}")
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseNewPass>, t: Throwable) {
+                Log.e("NewPassword2", "Cannot post data new pass")
+            }
+
+        })
+    }
     private val _responsechangepass : MutableLiveData<ChangePasswordResponse> = MutableLiveData()
     val responsechangepass : LiveData<ChangePasswordResponse> = _responsechangepass
 

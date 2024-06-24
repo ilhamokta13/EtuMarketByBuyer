@@ -5,21 +5,25 @@ import com.ilham.etumarketbybuyer.model.cart.DataAddCart
 import com.ilham.etumarketbybuyer.model.cart.ResponseAddCart
 import com.ilham.etumarketbybuyer.model.cart.usercart.DeleteAllCartResponse
 import com.ilham.etumarketbybuyer.model.cart.usercart.GetCartResponse
-import com.ilham.etumarketbybuyer.model.changepass.ChangePasswordResponse
-import com.ilham.etumarketbybuyer.model.changepass.DataChangePass
+import com.ilham.etumarketbybuyer.model.changepass.*
 import com.ilham.etumarketbybuyer.model.login.LoginBody
 import com.ilham.etumarketbybuyer.model.login.ResponseLogin
 import com.ilham.etumarketbybuyer.model.product.allproduct.AllProductResponse
 import com.ilham.etumarketbybuyer.model.product.productperid.GetProductPerId
-import com.ilham.etumarketbybuyer.model.product.productshopname.GetProductspershop
+import com.ilham.etumarketbybuyer.model.product.tawar.GetTawarHarga.GetResponseTawarHarga
+import com.ilham.etumarketbybuyer.model.product.tawar.UpdateHargaResponse
+import com.ilham.etumarketbybuyer.model.product.tawar.UpdateProductResponse
 import com.ilham.etumarketbybuyer.model.profile.GetProfileResponse
 import com.ilham.etumarketbybuyer.model.profile.UpdateProfileResponse
 import com.ilham.etumarketbybuyer.model.register.ResponseRegister
-import com.ilham.etumarketbybuyer.model.status.PostUpdateStatus
 import com.ilham.etumarketbybuyer.model.status.ResponseUpdateStatus
 import com.ilham.etumarketbybuyer.model.transaksi.GetTransaksiResponse
 import com.ilham.etumarketbybuyer.model.transaksi.PostTransaction
 import com.ilham.etumarketbybuyer.model.transaksi.riwayat.GetRiwayatResponse
+import com.ilham.etumarketbybuyer.pengiriman.PengirimanResponse
+import com.ilham.etumarketbybuyer.pengiriman.PostPengiriman
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -32,10 +36,20 @@ interface ApiService {
         @Field("password") password : String,
         @Field("telp") telp : String,
         @Field("role") role:String,
+        @Field("shopName") shopName : String
     ): Call<ResponseRegister>
 
     @POST("user/login")
     fun login(@Body loginBody: LoginBody) : Call<ResponseLogin>
+
+    @POST("user/forgot-password")
+    fun forgotpass(
+        @Body postForgotPass: PostForgotPass) : Call<ResponseForgotPass>
+
+    @POST("user/new-password")
+    fun newpass(
+        @Body postNewPassword: PostNewPassword) : Call<ResponseNewPass>
+
 
     @GET("product")
     fun getAllProduct(
@@ -106,11 +120,16 @@ interface ApiService {
         @Header("Authorization") token: String
     ):Call<GetRiwayatResponse>
 
+    @Multipart
     @PATCH("/transaksi/updateStatus")
     fun poststatus(
         @Header("Authorization") token: String,
-        @Body postUpdateStatus: PostUpdateStatus
-    ):Call<ResponseUpdateStatus>
+        @Part("kode_transaksi") kode_transaksi: RequestBody,
+        @Part image: MultipartBody.Part,
+        @Part("productID") productID: RequestBody,
+        @Part("status") status: RequestBody
+    ): Call<ResponseUpdateStatus>
+
 
     @GET("/user/profile")
     fun getprofile(
@@ -123,6 +142,37 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Field("email") email : String,
     ):Call<UpdateProfileResponse>
+
+
+    @FormUrlEncoded
+    @PATCH("product/{id}/price")
+    fun tawarharga(
+        @Header("Authorization") token: String,
+        @Path("id") id:String,
+        @Field("price") price : Int,
+
+    ):Call<UpdateProductResponse>
+
+
+    @POST("transaksi/calculate-shipping-cost")
+    fun kirimlokasibarang(
+        @Header("Authorization") token: String,
+        @Body postPengiriman: PostPengiriman
+    ):Call<PengirimanResponse>
+
+    @FormUrlEncoded
+    @POST("product/{id}/offer")
+    fun posttawarharga(
+        @Header("Authorization") token: String,
+        @Path("id") id:String,
+        @Field("price") price : Int,
+    ):Call<UpdateHargaResponse>
+
+
+    @GET("product/offers/status")
+    fun gettawarharga(
+        @Header("Authorization") token: String,
+    ):Call<GetResponseTawarHarga>
 
  
 

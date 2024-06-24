@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".PengirimanFragment">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginStart="20dp"
+        app:cardCornerRadius="30dp"
+        app:cardElevation="20dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="20dp"
+            android:background="@color/white">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_gravity="center_horizontal"
+                android:padding="30dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Kirim Lokasi Pengiriman Produk"
+                    android:textSize="18sp"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"/>
+
+
+
+
+                <TextView
+                    android:id="@+id/latitude"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/shape_rectangle_date"
+                    android:gravity="start|center_vertical"
+                    android:hint="Enter Latitude"
+                    android:inputType="number"
+                    android:padding="16dp"
+                    android:textColor="@color/black" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:id="@+id/longitude"
+                    android:layout_marginTop="20dp"
+                    android:padding="16dp"
+                    android:inputType = "number"
+                    android:hint="Enter Longitude"
+                    android:background="@drawable/shape_rectangle_date"
+                    android:gravity="start|center_vertical"
+                    android:textColor="@color/black"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:id="@+id/altitude"
+                    android:layout_marginTop="20dp"
+                    android:padding="16dp"
+                    android:inputType = "number"
+                    android:hint="Enter Altitude"
+                    android:background="@drawable/shape_rectangle_date"
+                    android:gravity="start|center_vertical"
+                    android:textColor="@color/black"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:id="@+id/edAcc"
+                    android:layout_marginTop="20dp"
+                    android:padding="16dp"
+                    android:inputType = "number"
+                    android:hint="edAcc"
+                    android:background="@drawable/shape_rectangle_date"
+                    android:gravity="start|center_vertical"
+                    android:textColor="@color/black"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:id="@+id/uploadlocation"
+                    android:layout_marginTop="20dp"
+                    android:padding="16dp"
+                    android:inputType = "number"
+                    android:hint="Enter Location"
+                    android:background="@drawable/shape_rectangle_date"
+                    android:gravity="start|center_vertical"
+                    android:textColor="@color/black"/>
+
+                <Button
+                    android:id="@+id/findlocation"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_marginTop="15dp"
+                    android:backgroundTint="@color/teal_200"
+                    android:text="Find Location"
+                    android:textSize="18sp"
+                    app:cornerRadius="20dp" />
+
+
+
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:text="Save"
+                    android:id="@+id/saveButton"
+                    android:textSize="18sp"
+                    android:layout_marginTop="15dp"
+                    app:cornerRadius = "20dp"
+                    android:backgroundTint="@color/teal_200"/>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+
+    </androidx.cardview.widget.CardView>
+
+</ScrollView>

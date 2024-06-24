@@ -1,44 +1,61 @@
 package com.ilham.etumarketbybuyer
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
+import android.location.Address
+import android.location.Geocoder
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.ilham.etumarketbybuyer.databinding.FragmentCartBinding
+import com.ilham.etumarketbybuyer.model.cart.usercart.CartProduct
+import com.ilham.etumarketbybuyer.model.cart.usercart.Data
 import com.ilham.etumarketbybuyer.model.cart.usercart.Product
+import com.ilham.etumarketbybuyer.model.transaksi.Destination
 import com.ilham.etumarketbybuyer.model.transaksi.PostTransaction
-import com.ilham.etumarketbybuyer.viewmodel.CartViewModel
-import com.ilham.etumarketbybuyer.viewmodel.PaymentViewModel
-import com.ilham.etumarketbybuyer.viewmodel.ProductViewModel
+import com.ilham.etumarketbybuyer.viewmodel.*
 import dagger.hilt.android.AndroidEntryPoint
-import java.io.Serializable
+import java.io.IOException
+import java.lang.Byte.decode
+import android.util.Base64
+import com.ilham.etumarketbybuyer.model.chat.NotificationData
+import com.ilham.etumarketbybuyer.model.chat.PushNotification
+import com.ilham.etumarketbybuyer.model.chat.RetrofitInstance
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.json.JSONObject
+import java.lang.Integer.decode
+import java.security.spec.PSSParameterSpec.DEFAULT
+import java.util.*
 
+//Annotation: @AndroidEntryPoint menandakan bahwa
+// Hilt digunakan untuk injeksi dependensi dalam Fragment ini.
 @AndroidEntryPoint
-class CartFragment : Fragment() {
+class CartFragment : Fragment()  {
     lateinit var binding: FragmentCartBinding
     lateinit var pref: SharedPreferences
-    private lateinit var idUser: String
     lateinit var cartVm: CartViewModel
-    private lateinit var cartadapter: CartAdapter
+    lateinit var cartadapter: CartAdapter
     lateinit var productVm: ProductViewModel
     lateinit var paymentVm : PaymentViewModel
+    lateinit var userVm : UserViewModel
+    lateinit var historyVm : HistoryViewModel
     private lateinit var idProduct: String
-    private var cartItems: List<Product> = listOf()
+    private var itemcarts: List<CartProduct> = listOf()
 
-    private lateinit var handler: Handler
-    private val interval: Long = 3600000 // 1 jam
 
 
     override fun onCreateView(
@@ -50,29 +67,30 @@ class CartFragment : Fragment() {
         return binding.root
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         pref = requireContext().getSharedPreferences("Berhasil", Context.MODE_PRIVATE)
         cartVm = ViewModelProvider(this).get(CartViewModel::class.java)
-        productVm = ViewModelProvider(this).get(ProductViewModel::class.java)
         paymentVm = ViewModelProvider(this).get(PaymentViewModel::class.java)
-        idUser = pref.getString("token", "").toString()
+        productVm = ViewModelProvider(this).get(ProductViewModel::class.java)
 
+        //Inisialisasi: Menginisialisasi SharedPreferences, ViewModelProvider, dan CartAdapter.
+        //Pengaturan RecyclerView: Mengatur RecyclerView dengan LinearLayoutManager dan adaptor.
 
-        // Inisialisasi handler
-        handler = Handler(Looper.getMainLooper())
+        val token = pref.getString("token", "").toString()
+        cartadapter = CartAdapter(itemcarts, requireContext(), cartVm, token, viewLifecycleOwner)
 
-        // Mulai pengulangan
-        startRepeatingTask()
+        binding.rvListCart.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        binding.rvListCart.adapter = cartadapter
 
-
-
-
-        if (pref.getString("token", "")!!.isEmpty()) {
+        //validasi Token: Memeriksa apakah token kosong atau sudah kadaluarsa.
+        // Jika ya, sembunyikan RecyclerView dan tampilkan dialog untuk meminta pengguna login ulang.
+        if (token.isEmpty() || isTokenExpired(token)) {
             binding.rvListCart.visibility = View.GONE
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Login")
-                .setMessage("Anda Belum Login")
+                .setMessage("Your session has expired. Please login again.")
                 .setCancelable(false)
                 .setNegativeButton("Cancel") { dialog, which ->
                     // Respond to negative button press
@@ -83,84 +101,115 @@ class CartFragment : Fragment() {
                     findNavController().navigate(R.id.action_cartFragment_to_loginFragment)
                 }
                 .show()
-        } else if (pref.getString("token", "")!!.isNotEmpty()) {
-
+        } else {
             getDataCart()
-
-
-
         }
 
-
-
-        binding.btnDeletecart.setOnClickListener {
-            cartVm.deletecart(idUser)
-            Toast.makeText(requireContext(), "Item telah dihapus", Toast.LENGTH_SHORT).show()
-        }
-
-
-
+        //Tombol Checkout: Mengatur logika untuk tombol checkout, termasuk mengamati LiveData dari cartVm dan paymentVm,
+        // menghitung total harga, dan memproses transaksi serta mengirim notifikasi.
         binding.btnCheckout.setOnClickListener {
-
+            //Fungsi ini menggunakan LiveData observer untuk memantau perubahan pada data keranjang belanja (dataCartUser) dari cartVm (ViewModel).
+            // Setiap kali data keranjang belanja berubah, blok kode dalam observer akan dieksekusi.
             cartVm.dataCartUser.observe(viewLifecycleOwner, Observer { cartItems ->
+                //RecyclerView (rvListCart) diatur dengan LinearLayoutManager untuk menampilkan item secara vertikal, dan adapter (cartadapter) diatur untuk menampilkan item dalam keranjang belanja.
                 binding.rvListCart.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-
+                binding.rvListCart.adapter = cartadapter
+                //Jika keranjang belanja kosong, teks harga produk (tvPriceProduct) diatur menjadi "0" dan pesan log "Cart is empty" dicetak.
+                // Jika tidak kosong, program melanjutkan untuk menghitung total harga dan biaya pengiriman.
                 if (cartItems.isNullOrEmpty()) {
                     // Handle the case when the cart is empty
-                    // For example, you can show a message or hide the price view
                     binding.tvPriceProduct.text = "0"
-                    // You might want to update other UI elements accordingly
+                    Log.d("CartFragment", "Cart is empty")
                 } else {
+                    //Program menghitung total harga produk (totalPrice) dan biaya pengiriman (shippingCost). ID produk dan kuantitas disimpan dalam daftar (listOfIds dan listOfQuantities).
+                    // Total harga produk dan biaya pengiriman kemudian ditampilkan pada UI.
                     var totalPrice = 0.0
+                    var shippingCost = 0
                     val listOfIds = mutableListOf<String>()
                     val listOfQuantities = mutableListOf<Int>()
 
-                    for (product in cartItems) {
-                        val idProductCart = product.productID.id
-                        val productName = product.productID.nameProduct
-                        val quantity = product.quantity
-                        val price = product.productID.price
-                        val keseluruhanharga = quantity * price.toDouble()
-                        totalPrice += keseluruhanharga
+                    // Collect product IDs and quantities
+                    for (cartItem in cartItems) {
+                        val idProductCart = cartItem.product.productID.id
+                        val quantity = cartItem.product.quantity
+                        val price = cartItem.product.productID.price
+                        val totalProductPrice = quantity * price.toDouble()
+                        totalPrice += totalProductPrice
                         listOfIds.add(idProductCart)
                         listOfQuantities.add(quantity)
 
+                        // Assuming shipping cost is the same for all items
+                        shippingCost = cartItem.shippingCost
                     }
 
-                    binding.tvPriceProduct.text = totalPrice.toString()
+                    val totalCost = totalPrice + shippingCost
+                    binding.txttotalproduk.text = totalPrice.toString()
+                    binding.txtshippingCost.text = shippingCost.toString()
+                    binding.tvPriceProduct.text = totalCost.toString()
 
-                    val dataCart = PostTransaction(listOfIds, listOfQuantities, totalPrice.toInt())
-                    val token = pref.getString("token", "").toString()
+                    // Proceed to checkout without location information
+                    //Program menampilkan dialog konfirmasi untuk melanjutkan ke proses checkout.
+                    // Jika pengguna memilih "Yes", program akan membuat objek PostTransaction dengan data keranjang dan
+                    // mengirimkan permintaan pembayaran menggunakan paymentVm.postpayment.
+                    // Jika pengguna memilih "No", program akan menavigasi ke homeFragment2.
+                    AlertDialog.Builder(requireContext())
+                        .setTitle("Confirmation")
+                        .setMessage("Do you want to proceed with checkout?")
+                        .setPositiveButton("Yes") { _, _ ->
+                            // Perform checkout without location information
+                            val destination = Destination(0.0, 0.0) // Dummy destination or any default location
+                            val dataCart = PostTransaction(destination, listOfIds, listOfQuantities, totalPrice.toInt())
+                            val token = pref.getString("token", "").toString()
 
-                    paymentVm.postpayment(token, dataCart)
+                            paymentVm.postpayment(token, dataCart)
+                        }
+                        .setNegativeButton("No") { _, _ ->
+                            findNavController().navigate(R.id.action_cartFragment_to_homeFragment2)
+                        }
+                        .show()
                 }
-
             })
-            paymentVm.midtransResponse.observe(viewLifecycleOwner){
-                if (it.message == "Transaksi berhasil dibuat") {
 
+            paymentVm.midtransResponse.observe(viewLifecycleOwner) {
+                if (it.message == "Transaksi berhasil dibuat") {
                     val tokenmidtrans = it.midtransResponse.token
                     val redirectUrl = it.midtransResponse.redirectUrl
 
-
-                    Log.d("Payment Midtrans", "Midtrans :$tokenmidtrans")
-                    val redirecturl = it.midtransResponse.redirectUrl
-
-                    // Cetak log atau tampilkan toast jika perlu
+                    Log.d("Payment Midtrans", "Midtrans: $tokenmidtrans")
                     Log.d("Payment Redirect", "Redirect URL: $redirectUrl")
 
-                    // Buka redirect URL
                     openRedirectUrl(redirectUrl)
 
+                    // Kirim notifikasi setelah transaksi berhasil
+                    val notificationData = NotificationData(
+                        title = "Transaksi Berhasil",
+                        message = "Transaksi Anda dengan ID $tokenmidtrans telah berhasil."
+                    )
+                    val pushNotification = PushNotification(
+                        data = notificationData,
+                        to = "/topics/your_topic" // Sesuaikan dengan topik atau penerima notifikasi
+                    )
 
+                    sendNotification(pushNotification)
 
                 } else {
                     Toast.makeText(context, "Response Failed", Toast.LENGTH_SHORT).show()
                 }
-
             }
+        }
 
 
+
+//
+
+
+
+        //Tombol Delete: Menghapus item dari keranjang dan memperbarui tampilan.
+        //Tombol Back: Menavigasi kembali ke halaman utama.
+        binding.btnDeletecart.setOnClickListener {
+            cartVm.deletecart(token)
+            Toast.makeText(requireContext(), "Item telah dihapus", Toast.LENGTH_SHORT).show()
+            cartadapter.notifyDataSetChanged()
         }
 
         binding.btnBack.setOnClickListener {
@@ -168,127 +217,181 @@ class CartFragment : Fragment() {
         }
 
 
+
+
     }
 
+
+
+    //onResume: Memanggil getDataCart setiap kali Fragment aktif kembali.
     override fun onResume() {
         super.onResume()
+
         getDataCart()
+
+    }
+
+    private fun getDataCart(){
+        val token = pref.getString("token", "").toString()
+        cartVm.CartUser(token)
+        Log.d("CartFragment", "Fetching cart data with token: $token")
+
+        cartVm.dataCartUser.observe(viewLifecycleOwner, Observer { newCartItems ->
+            Log.d("CartFragment", "Received cart items: $newCartItems")
+            if (newCartItems != null) {
+                cartadapter.updateCartItems(newCartItems)
+                Log.d("CartFragment", "CartAdapter updated with new items")
+            }
+            if (newCartItems.isNullOrEmpty()) {
+                // Handle the case when the cart is empty
+                binding.tvPriceProduct.text = "0"
+                Log.d("CartFragment", "Cart is empty")
+            } else {
+                var totalPrice = 0.0
+                var shippingCost = 0
+                val listOfIds = mutableListOf<String>()
+                val listOfQuantities = mutableListOf<Int>()
+                var latitude: Double? = null
+                var longitude: Double? = null
+
+                for (product in newCartItems) {
+                    if (latitude == null && longitude == null) {
+                        latitude = product.latitude
+                        longitude = product.longitude
+
+                        val geocoder = Geocoder(requireContext(), Locale.getDefault())
+                        try {
+                            // Define valid ranges for latitude and longitude
+                            val MIN_LATITUDE = -90.0
+                            val MAX_LATITUDE = 90.0
+                            val MIN_LONGITUDE = -180.0
+                            val MAX_LONGITUDE = 180.0
+
+                            // Validate latitude and longitude values
+                            if (latitude !in MIN_LATITUDE..MAX_LATITUDE) {
+                                throw IllegalArgumentException("Latitude is out of range: $latitude")
+                            }
+                            if (longitude !in MIN_LONGITUDE..MAX_LONGITUDE) {
+                                throw IllegalArgumentException("Longitude is out of range: $longitude")
+                            }
+
+                            // Proceed with geocoding if values are valid
+                            val addresses: List<Address> = geocoder.getFromLocation(latitude, longitude, 1) as List<Address>
+                            if (addresses.isNotEmpty()) {
+                                val locName: String = addresses[0].getAddressLine(0)
+                                binding.LokasiPengiriman.text = "Lokasi Pengiriman : $locName"
+                                productVm.saveLoc(locName)
+                            }
+                        } catch (e: IllegalArgumentException) {
+                            e.printStackTrace()
+                            // Handle invalid latitude or longitude error
+                            // For example, show an error message to the user
+                            binding.LokasiPengiriman.text = "Invalid latitude or longitude."
+                        } catch (e: IOException) {
+                            e.printStackTrace()
+                            // Handle other IOExceptions
+                        }
+
+                    }
+
+                    val idProductCart = product.product.productID.id
+                    shippingCost = product.shippingCost
+                    val quantity = product.product.quantity
+                    val price = product.product.productID.price
+                    val totalProductPrice = quantity * price.toDouble()
+                    totalPrice += totalProductPrice
+                    listOfIds.add(idProductCart)
+                    listOfQuantities.add(quantity)
+                }
+
+                val totalCost = totalPrice + shippingCost
+                binding.tvPriceProduct.text = totalCost.toString()
+                binding.txttotalproduk.text = "Harga Total Produk : $totalPrice"
+                binding.txtshippingCost.text = "Biaya Ongkir : $shippingCost"
+
+
+                // Update adapter after receiving data
+                cartadapter.updateCartItems(newCartItems)
+            }
+        })
     }
 
 
+    fun isTokenExpired(token: String): Boolean {
+        try {
+            val split = token.split(".")
+            val decodedBytes = Base64.decode(split[1], Base64.URL_SAFE)
+            val decodedString = String(decodedBytes, Charsets.UTF_8)
+            val jsonObject = JSONObject(decodedString)
+            val exp = jsonObject.getLong("exp")
+            val currentTime = System.currentTimeMillis() / 1000
+            return currentTime > exp
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return true // If there's an error decoding the token, assume it's expired.
+    }
 
+    private fun sendNotification(notification: PushNotification) = CoroutineScope(Dispatchers.IO).launch {
+        try {
+            withContext(Dispatchers.IO) {
 
-    fun getDataCart() {
-        val token = pref.getString("token", "").toString()
-        cartVm.CartUser(token)
-        cartVm.dataCartUser.observe(viewLifecycleOwner, Observer { cartItems ->
-            binding.rvListCart.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-            binding.rvListCart.adapter = CartAdapter(cartItems,requireContext(), cartVm, idUser, viewLifecycleOwner)
-
-
-                if (cartItems.isNullOrEmpty()) {
-                    // Handle the case when the cart is empty
-                    // For example, you can show a message or hide the price view
-                    binding.tvPriceProduct.text = "0"
-                    // You might want to update other UI elements accordingly
+                val response = RetrofitInstance.api.postNotification(notification)
+                if (response.isSuccessful) {
+//                    Log.d("TAG", "Response: ${Gson().toJson(response)}")
                 } else {
-                    var totalPrice = 0.0
-                    val listOfIds = mutableListOf<String>()
-                    val listOfQuantities = mutableListOf<Int>()
-                    val listOfTotalPrices = mutableListOf<Int>()
-
-                    for (product in cartItems) {
-                        val idProductCart = product.productID.id
-                        val productName = product.productID.nameProduct
-                        val quantity = product.quantity
-                        val price = product.productID.price
-                        val keseluruhanharga = quantity * price.toDouble()
-                        totalPrice += keseluruhanharga
-                        listOfIds.add(idProductCart)
-                        listOfQuantities.add(quantity)
-                        listOfTotalPrices.add(keseluruhanharga.toInt())
-                    }
-
-                    binding.tvPriceProduct.text = totalPrice.toString()
-
-
+                    Log.e("TAG", response.errorBody()!!.string())
                 }
 
 
-
-
-
-
-
-
-
-        })
-
-
-    }
-
-
-    private fun startRepeatingTask() {
-        // Jalankan runnable setiap interval waktu
-        handler.postDelayed(object : Runnable {
-            override fun run() {
-                // Panggil fungsi untuk meminta pengguna untuk login kembali
-                promptUserForLogin()
-
-                // Ulangi pengulangan
-                handler.postDelayed(this, interval)
             }
-        }, interval)
-    }
-
-    private fun showLoginDialog() {
-        // Tampilkan dialog login menggunakan MaterialAlertDialogBuilder
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Login")
-            .setMessage("Anda Belum Login")
-            .setCancelable(false)
-            .setNegativeButton("Cancel") { dialog, which ->
-                // Respon saat tombol negatif ditekan
-                // Anda dapat menyesuaikan aksi yang diperlukan di sini
-            }
-            .setPositiveButton("Login") { dialog, which ->
-                // Respon saat tombol positif ditekan
-                // Navigasikan pengguna ke layar login
-                findNavController().navigate(R.id.action_cartFragment_to_loginFragment)
-            }
-            .show()
-    }
-
-    private fun stopRepeatingTask() {
-        // Hentikan pengulangan jika handler belum diinisialisasi
-        handler.removeCallbacksAndMessages(null)
-    }
-
-    private fun promptUserForLogin() {
-        // Cek apakah pengguna telah login
-        if (pref.getString("token", "")!!.isEmpty()) {
-            // Jika belum login, tampilkan dialog login
-            showLoginDialog()
+        } catch(e: Exception) {
+            Log.e("TAG", e.toString())
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    private fun updateTotalPrice(cartData: List<Data>) {
+        val totalPrice = cartData.flatMap { it.products }
+            .sumOf { it.quantity * it.productID.price } + cartData.sumOf { it.shippingCost }
+
+    }
+
+
 
 
 
 
     private fun openRedirectUrl(redirectUrl: String) {
-        val bundle = Bundle()
-
-        bundle.putString("URL",redirectUrl).apply {
-            findNavController().navigate(R.id.action_cartFragment_to_webViewFragment,bundle)
+        val bundle = Bundle().apply {
+            putString("URL", redirectUrl)
         }
-
+        findNavController().navigate(R.id.action_cartFragment_to_webViewFragment, bundle)
     }
+
+
 
 
 
 
 
 }
+
+
+
 
 
 

@@ -29,7 +29,6 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.ilham.etumarketbybuyer.databinding.FragmentEditCartBinding
-import com.ilham.etumarketbybuyer.model.cart.DataAddCart
 import com.ilham.etumarketbybuyer.model.cart.usercart.Product
 import com.ilham.etumarketbybuyer.viewmodel.CartViewModel
 import com.ilham.etumarketbybuyer.viewmodel.ProductViewModel
@@ -143,7 +142,7 @@ class EditCartFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun UpdateCart() {
-        val getData = arguments?.getSerializable("edit") as  Product
+        val getData = arguments?.getSerializable("edit") as Product
         idProduct = getData.productID.id
 
         val jmlcart = cartViewModel.getCart()
@@ -152,7 +151,7 @@ class EditCartFragment : Fragment(), OnMapReadyCallback {
 
         binding.tvJumlahCart.text = belanja.toString()
 
-        val dataCart = DataAddCart(listOf(idProduct), listOf(belanja))
+//        val dataCart = DataAddCart(listOf(idProduct), listOf(belanja))
         val token = pref.getString("token", "").toString()
 //        cartViewModel.updatecart(token,dataCart)
 

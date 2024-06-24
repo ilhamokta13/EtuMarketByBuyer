@@ -21,12 +21,16 @@ import com.ilham.etumarketbybuyer.constant.FirebaseService
 import com.ilham.etumarketbybuyer.databinding.FragmentUserBinding
 import com.ilham.etumarketbybuyer.model.chat.User
 import com.ilham.etumarketbybuyer.model.chat.UserAdapter
+import android.util.Base64
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import org.json.JSONObject
 
 
 class UserFragment : Fragment() {
     lateinit var binding : FragmentUserBinding
     val userList = ArrayList<User>()
     lateinit var pref: SharedPreferences
+    lateinit var token: String
 
 
     override fun onCreateView(
@@ -41,21 +45,40 @@ class UserFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        pref = requireActivity().getSharedPreferences("Success", Context.MODE_PRIVATE)
+        pref = requireActivity().getSharedPreferences("Berhasil", Context.MODE_PRIVATE)
         FirebaseService.sharedPref = requireActivity().getSharedPreferences("Berhasil", Context.MODE_PRIVATE)
 
 
+        val token = pref.getString("token", "").toString()
 
-        FirebaseMessaging.getInstance().token
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    if (task.result != null && !TextUtils.isEmpty(task.result)) {
-                        val token: String = task.result!!
-                    }
+        with(pref.edit()) {
+            putBoolean("hasVisitedChat", true)
+            apply()
+        }
+
+        if (token.isEmpty() || isTokenExpired(token)) {
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Login Required")
+                .setMessage("Your session has expired. Please login again.")
+                .setCancelable(false)
+                .setPositiveButton("Login") { dialog, which ->
+                    findNavController().navigate(R.id.action_userFragment_to_loginFragment)
                 }
-            }
+                .setNegativeButton("Cancel") { dialog, which ->
+                    // Tetap di halaman user
+                }
+                .show()
+        } else {
+            initializeFirebaseMessaging()
+            setupRecyclerView()
+            getUsersList()
+        }
 
-        binding.userRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+
+
+
+
+
 
 //        binding.imgBack.setOnClickListener {
 //
@@ -66,6 +89,23 @@ class UserFragment : Fragment() {
         }
 
         getUsersList()
+    }
+
+
+    private fun setupRecyclerView() {
+        binding.userRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+    }
+
+    private fun initializeFirebaseMessaging() {
+        FirebaseMessaging.getInstance().token
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    if (task.result != null && !TextUtils.isEmpty(task.result)) {
+                        val token: String = task.result!!
+                        // Lakukan sesuatu dengan token jika perlu
+                    }
+                }
+            }
     }
 
     fun getUsersList() {
@@ -110,6 +150,22 @@ class UserFragment : Fragment() {
             }
 
         })
+    }
+
+
+    fun isTokenExpired(token: String): Boolean {
+        try {
+            val split = token.split(".")
+            val decodedBytes = Base64.decode(split[1], Base64.URL_SAFE)
+            val decodedString = String(decodedBytes, Charsets.UTF_8)
+            val jsonObject = JSONObject(decodedString)
+            val exp = jsonObject.getLong("exp")
+            val currentTime = System.currentTimeMillis() / 1000
+            return currentTime > exp
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return true // Jika terjadi kesalahan, anggap token sudah kedaluwarsa
     }
 
 

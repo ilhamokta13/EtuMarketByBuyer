@@ -6,9 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.ilham.etumarketbybuyer.model.alltransaksi.Data
 import com.ilham.etumarketbybuyer.model.alltransaksi.GetAllTransaksi
-import com.ilham.etumarketbybuyer.model.alltransaksi.Product
 import com.ilham.etumarketbybuyer.model.transaksi.GetTransaksiResponse
-import com.ilham.etumarketbybuyer.model.transaksi.MidtransResponse
 import com.ilham.etumarketbybuyer.model.transaksi.PostTransaction
 import com.ilham.etumarketbybuyer.network.ApiService
 import dagger.hilt.android.lifecycle.HiltViewModel

@@ -10,11 +10,11 @@
     </style>
     <style name="Btn" parent="Widget.Material3.Button">
         <item name="android:textSize">14sp</item>
-        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:layout_marginTop">3dp</item>
         <item name="android:layout_marginRight">5dp</item>
         <item name="android:layout_marginLeft">5dp</item>
-        <item name="android:layout_marginBottom">10dp</item>
-        <item name="android:backgroundTint">@color/DARKBLUE04</item>
+        <item name="android:layout_marginBottom">5dp</item>
+        <item name="android:backgroundTint">@color/teal_200</item>
 
 
     </style>

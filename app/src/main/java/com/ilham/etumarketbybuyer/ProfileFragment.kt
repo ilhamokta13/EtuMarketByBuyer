@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
+import com.google.android.gms.common.util.Base64Utils.decode
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
@@ -30,6 +31,8 @@ import com.ilham.etumarketbybuyer.model.chat.User
 import com.ilham.etumarketbybuyer.model.profile.DataProfile
 import com.ilham.etumarketbybuyer.viewmodel.UserViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import org.json.JSONObject
+import android.util.Base64
 import java.io.IOException
 import java.util.*
 import kotlin.collections.HashMap
@@ -41,14 +44,12 @@ class ProfileFragment : Fragment() {
     private lateinit var firebaseUser: FirebaseUser
     private lateinit var databaseReference: DatabaseReference
     lateinit var userVm : UserViewModel
+    lateinit var token : String
     private var filePath: Uri? = null
     private val PICK_IMAGE_REQUEST: Int = 2020
-    private lateinit var storage: FirebaseStorage
-    private lateinit var storageRef: StorageReference
-    lateinit var firebaseAuth: FirebaseAuth
 
-    private lateinit var handler: Handler
-    private val interval: Long = 3600000 // 1 jam
+
+
 
 
     override fun onCreateView(
@@ -64,62 +65,25 @@ class ProfileFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         pref = requireActivity().getSharedPreferences("Berhasil", Context.MODE_PRIVATE)
         userVm = ViewModelProvider(this).get(UserViewModel::class.java)
-
-        firebaseUser = FirebaseAuth.getInstance().currentUser!!
-        firebaseAuth = FirebaseAuth.getInstance()
-        databaseReference =
-            FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.uid)
-
-        storage = FirebaseStorage.getInstance()
-        storageRef = storage.reference
+        token = pref.getString("token", "").toString()
 
 
 
-        // Inisialisasi handler
-        handler = Handler(Looper.getMainLooper())
-
-        startRepeatingTask()
-
-
-        databaseReference.addValueEventListener(object : ValueEventListener {
-            override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(context, error.message, Toast.LENGTH_SHORT).show()
-            }
-
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val user = snapshot.getValue(User::class.java)
-//                binding.etUserName.setText(user!!.fullname)
-
-//                if (user!!.profileImage == "") {
-//                    binding.uploadImage.setImageResource(R.drawable.profile)
-//                } else {
-//                    Glide.with(requireContext()).load(user.profileImage).into(binding.uploadImage)
-//                }
-            }
-        })
-
-//        binding.uploadImage.setOnClickListener {
-//            chooseImage()
-//        }
-
-        if (pref.getString("token", "")!!.isEmpty()) {
+        if (token.isEmpty() || isTokenExpired(token)) {
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle("Login")
-                .setMessage("Anda Belum Login")
+                .setMessage("Your session has expired. Please login again.")
                 .setCancelable(false)
                 .setNegativeButton("Cancel") { dialog, which ->
-                    // Respond to negative button press
-                    findNavController().navigate(R.id.action_profileFragment2_to_homeFragment2)
+                    // Tetap di halaman profil
                 }
                 .setPositiveButton("Login") { dialog, which ->
-                    // Respond to positive button press
+                    // Navigasi ke halaman login
                     findNavController().navigate(R.id.action_profileFragment2_to_loginFragment)
                 }
                 .show()
-        } else if (pref.getString("token", "")!!.isNotEmpty()) {
-
+        } else {
             getprofile()
-
         }
 
 
@@ -128,7 +92,6 @@ class ProfileFragment : Fragment() {
 
         binding.btnUpdate.setOnClickListener {
             updateuserprofile()
-//            uploadImage()
 
         }
 
@@ -150,62 +113,25 @@ class ProfileFragment : Fragment() {
 
 
 
-    private fun chooseImage() {
-        val intent: Intent = Intent()
-        intent.type = "image/*"
-        intent.action = Intent.ACTION_GET_CONTENT
-        startActivityForResult(Intent.createChooser(intent, "Select Image"), PICK_IMAGE_REQUEST)
-    }
 
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode != null) {
-            filePath = data!!.data
-            try {
-//                var bitmap: Bitmap = MediaStore.Images.Media.getBitmap(requireContext().getContentResolver(), filePath)
-//                binding.uploadImage.setImageBitmap(bitmap)
-//                binding.btnSimpan.visibility = View.VISIBLE
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-        }
-    }
 
-//    private fun uploadImage() {
-//        if (filePath != null) {
-//
-//            var ref: StorageReference = storageRef.child("image/" + UUID.randomUUID().toString())
-//            ref.putFile(filePath!!)
-//                .addOnSuccessListener {
-//
-//                    val hashMap:HashMap<String,String> = HashMap()
-//                    hashMap.put("fullname",binding.etUserName.text.toString())
-//                    hashMap.put("profileImage",filePath.toString())
-//                    databaseReference.updateChildren(hashMap as Map<String, Any>)
-//                    Toast.makeText(context, "Uploaded", Toast.LENGTH_SHORT).show()
-//                    binding.btnSimpan.visibility = View.GONE
-//                }
-//                .addOnFailureListener {
-//                    Toast.makeText(requireContext(), "Failed" + it.message, Toast.LENGTH_SHORT)
-//                        .show()
-//
-//                }
-//
-//        }
-//    }
+
+
 
 
     fun updateuserprofile() {
-
+        //Mengambil Token dan Data Input
         val token = pref.getString("token", "").toString()
         val inputnama = binding.txtFullname.text.toString()
         val inputtelepon = binding.txtTelephone.text.toString()
         val inputrole = binding.txtRole.text.toString()
         val inputshopname = binding.txtShopname.text.toString()
 
+        //Memanggil Fungsi updateprofile dari ViewModel:
         userVm.updateprofile(token,inputnama,inputtelepon,inputrole, inputshopname)
 
+        //Mengamati Hasil Pembaruan Profil:
         userVm.responseupdateprofile.observe(viewLifecycleOwner){
             if (it != null) {
                 Toast.makeText(context, "Update Profile Berhasil", Toast.LENGTH_SHORT).show()
@@ -218,10 +144,13 @@ class ProfileFragment : Fragment() {
 
 
     fun getprofile(){
-        val token = pref.getString("token", "").toString()
 
+        //Mengambil Token
+        val token = pref.getString("token", "").toString()
+        //Memanggil Fungsi getUserProfile dari ViewModel:
         userVm.getUserProfile(token)
 
+        //Mengamati Data Profil Pengguna
         userVm.dataprofile.observe(viewLifecycleOwner){
             binding.txtFullname.setText(it.fullName)
             binding.txtTelephone.setText(it.telp)
@@ -231,50 +160,31 @@ class ProfileFragment : Fragment() {
     }
 
 
-    private fun startRepeatingTask() {
-        // Jalankan runnable setiap interval waktu
-        handler.postDelayed(object : Runnable {
-            override fun run() {
-                // Panggil fungsi untuk meminta pengguna untuk login kembali
-                promptUserForLogin()
-
-                // Ulangi pengulangan
-                handler.postDelayed(this, interval)
-            }
-        }, interval)
-    }
-
-
-    private fun showLoginDialog() {
-        // Tampilkan dialog login menggunakan MaterialAlertDialogBuilder
-        MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Login")
-            .setMessage("Anda Belum Login")
-            .setCancelable(false)
-            .setNegativeButton("Cancel") { dialog, which ->
-                // Respon saat tombol negatif ditekan
-                // Anda dapat menyesuaikan aksi yang diperlukan di sini
-            }
-            .setPositiveButton("Login") { dialog, which ->
-                // Respon saat tombol positif ditekan
-                // Navigasikan pengguna ke layar login
-                findNavController().navigate(R.id.action_cartFragment_to_loginFragment)
-            }
-            .show()
-    }
-
-    private fun stopRepeatingTask() {
-        // Hentikan pengulangan jika handler belum diinisialisasi
-        handler.removeCallbacksAndMessages(null)
-    }
-
-    private fun promptUserForLogin() {
-        // Cek apakah pengguna telah login
-        if (pref.getString("token", "")!!.isEmpty()) {
-            // Jika belum login, tampilkan dialog login
-            showLoginDialog()
+    private fun isTokenExpired(token: String): Boolean {
+        try {
+            //Memisahkan dan Mendekode Token
+            val split = token.split(".")
+            val decodedBytes = Base64.decode(split[1], Base64.URL_SAFE)
+            val decodedString = String(decodedBytes, Charsets.UTF_8)
+            val jsonObject = JSONObject(decodedString)
+            //Memeriksa Waktu Kedaluwarsa Token
+            val exp = jsonObject.getLong("exp")
+            val currentTime = System.currentTimeMillis() / 1000
+            return currentTime > exp
+            //Menangani Kesalahan
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
+        return true // Jika terjadi kesalahan, anggap token sudah kedaluwarsa
     }
+
+
+
+
+
+
+
+
 
 
 

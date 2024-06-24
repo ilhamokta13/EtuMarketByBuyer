@@ -11,6 +11,11 @@ import com.ilham.etumarketbybuyer.databinding.ItemProductBinding
 import com.ilham.etumarketbybuyer.model.product.allproduct.DataAllProduct
 import com.ilham.etumarketbybuyer.viewmodel.CartViewModel
 
+//Adaptor ini bertanggung jawab untuk menghubungkan data dari
+// model DataAllProduct ke tampilan item di RecyclerView.
+//BuyerAdapter: Kelas utama yang mengimplementasikan RecyclerView.Adapter.
+// Adaptor ini bertanggung jawab untuk mengelola tampilan daftar produk.
+//listproduct: Properti yang menyimpan daftar produk (List<DataAllProduct>).
 class BuyerAdapter( var listproduct: List<DataAllProduct>) : RecyclerView.Adapter<BuyerAdapter.ViewHolder>() {
 
 
@@ -27,6 +32,7 @@ class BuyerAdapter( var listproduct: List<DataAllProduct>) : RecyclerView.Adapte
         holder.binding.tvProductName.text = listproduct[position].nameProduct
         holder.binding.tvProductCategory.text = listproduct[position].category
         holder.binding.tvProductPrice.text = listproduct[position].price.toString()
+        holder.binding.tvStoreName.text = listproduct[position].sellerID.shopName
         Glide.with(holder.itemView).load("https://7895jr9m-3000.asse.devtunnels.ms/uploads/${listproduct[position].image}").into(holder.binding.ivProductImg)
 
         holder.binding.btnDetail.setOnClickListener{
@@ -45,6 +51,7 @@ class BuyerAdapter( var listproduct: List<DataAllProduct>) : RecyclerView.Adapte
 
     }
 
+    //getItemCount: Mengembalikan jumlah item dalam daftar produk (listproduct.size).
     override fun getItemCount(): Int {
         return listproduct.size
     }

@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_toStartOf="@+id/btn_logout"
-            android:background="@color/blue"
+            android:background="@color/teal_200"
             android:padding="18dp"
             android:text="Welcome, username!"
             android:textColor="#151515"
@@ -28,7 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:background="@color/blue"
+            android:background="@color/teal_200"
             android:padding="18dp"
             android:text="Logout"
             android:textColor="#151515"
@@ -166,6 +166,25 @@
                         android:textSize="17sp"
                         android:textStyle="bold" />
 
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="Upload Foto Barang Sudah Dikirim"
+                        android:textAlignment="center"
+                        android:textColor="@color/black"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/uploadImage"
+                        android:layout_width="150dp"
+                        android:layout_height="150dp"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="5dp"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/uploadimg" />
+
 
                     <RadioGroup
                         android:id="@+id/rg_statusPesanan"
@@ -179,7 +198,7 @@
                             android:id="@+id/terimapesanan"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Terima Pesanan"
+                            android:text="Pesanan Diterima"
                             android:textColor="@color/black" />
 
                         <RadioButton
@@ -188,13 +207,19 @@
                             android:layout_height="wrap_content"
                             android:text="Dibatalkan"
                             android:textColor="@color/black" />
+                        <RadioButton
+                            android:id="@+id/Cod"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Cash On Delivery"
+                            android:textColor="@color/black" />
                     </RadioGroup>
 
                     <TextView
                         android:id="@+id/btn_updateStatus"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@color/purple_700"
+                        android:background="@color/teal_200"
                         android:gravity="center"
                         android:padding="10dp"
                         android:layout_marginTop="5dp"

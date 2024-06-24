@@ -137,16 +137,17 @@
     <!--        app:layout_constraintTop_toBottomOf="@+id/til_login" />-->
 
     <TextView
-        android:id="@+id/lupa_password"
+        android:id="@+id/tvlupa_password"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="20dp"
-        android:text="Ganti password?"
+        android:text="Lupa Password?, Klik Sini"
         android:textSize="16sp"
         android:fontFamily="@font/nunitosemibold"
         android:textColor="@color/color_main"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/til_password" />
+
 
       <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_masukLogin"
@@ -164,7 +165,7 @@
         android:layout_marginTop="30dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lupa_password" />
+        app:layout_constraintTop_toBottomOf="@+id/tvlupa_password" />
 
 
     <androidx.constraintlayout.widget.ConstraintLayout

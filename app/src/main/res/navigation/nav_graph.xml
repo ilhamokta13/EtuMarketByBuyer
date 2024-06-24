@@ -70,6 +70,9 @@
         <action
             android:id="@+id/action_cartFragment_to_webViewFragment"
             app:destination="@id/webViewFragment" />
+        <action
+            android:id="@+id/action_cartFragment_to_pengirimanFragment"
+            app:destination="@id/pengirimanFragment" />
     </fragment>
     <fragment
         android:id="@+id/chatFragment2"
@@ -90,6 +93,9 @@
         <action
             android:id="@+id/action_historyFragment2_to_detailHistoryFragment"
             app:destination="@id/detailHistoryFragment" />
+        <action
+            android:id="@+id/action_historyFragment2_to_pengirimanFragment"
+            app:destination="@id/pengirimanFragment" />
     </fragment>
     <fragment
         android:id="@+id/profileFragment2"
@@ -117,6 +123,9 @@
         <action
             android:id="@+id/action_resetPassFragment_to_changePassFragment"
             app:destination="@id/changePassFragment" />
+        <action
+            android:id="@+id/action_resetPassFragment_to_newPasswordFragment"
+            app:destination="@id/newPasswordFragment" />
     </fragment>
     <fragment
         android:id="@+id/registerFragment"
@@ -138,6 +147,9 @@
         <action
             android:id="@+id/action_userFragment_to_chatFragment2"
             app:destination="@id/chatFragment2" />
+        <action
+            android:id="@+id/action_userFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
     </fragment>
     <fragment
         android:id="@+id/detailFragment"
@@ -156,6 +168,9 @@
         <action
             android:id="@+id/action_detailFragment_to_favoriteFragment2"
             app:destination="@id/favoriteFragment" />
+        <action
+            android:id="@+id/action_detailFragment_to_tawarHargaFragment"
+            app:destination="@id/tawarHargaFragment" />
     </fragment>
     <fragment
         android:id="@+id/pilihProdukFragment"
@@ -231,4 +246,43 @@
             android:id="@+id/action_changeEmailFragment_to_profileFragment2"
             app:destination="@id/profileFragment2" />
     </fragment>
+    <fragment
+        android:id="@+id/newPasswordFragment"
+        android:name="com.ilham.etumarketbybuyer.NewPasswordFragment"
+        android:label="fragment_new_password"
+        tools:layout="@layout/fragment_new_password" >
+        <action
+            android:id="@+id/action_newPasswordFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/tawarHargaFragment"
+        android:name="com.ilham.etumarketbybuyer.TawarHargaFragment"
+        android:label="TawarHargaFragment" >
+        <action
+            android:id="@+id/action_tawarHargaFragment_to_detailFragment"
+            app:destination="@id/detailFragment" />
+        <action
+            android:id="@+id/action_tawarHargaFragment_to_homeFragment2"
+            app:destination="@id/homeFragment2" />
+        <action
+            android:id="@+id/action_tawarHargaFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_tawarHargaFragment_to_userFragment"
+            app:destination="@id/userFragment" />
+        <action
+            android:id="@+id/action_tawarHargaFragment_to_tawaranHargaAllFragment"
+            app:destination="@id/tawaranHargaAllFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/pengirimanFragment"
+        android:name="com.ilham.etumarketbybuyer.PengirimanFragment"
+        android:label="fragment_pengiriman"
+        tools:layout="@layout/fragment_pengiriman" />
+    <fragment
+        android:id="@+id/tawaranHargaAllFragment"
+        android:name="com.ilham.etumarketbybuyer.TawaranHargaAllFragment"
+        android:label="fragment_tawaran_harga_all"
+        tools:layout="@layout/fragment_tawaran_harga_all" />
 </navigation>

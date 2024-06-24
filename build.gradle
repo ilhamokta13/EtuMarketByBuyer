@@ -2,6 +2,10 @@
 buildscript {
     ext.hilt_version = '2.45'
 //    navigationVersion = '2.5.3'
+    repositories {
+        google()
+        mavenCentral()
+    }
 
 
     dependencies {
@@ -13,6 +17,7 @@ buildscript {
         mavenCentral()  // Maven Central repository
         maven { url "http://dl.bintray.com/pt-midtrans/maven"; allowInsecureProtocol = true}
         maven { url "https://jitpack.io" }
+        maven { url "https://github.com"}
 
 
 
@@ -26,7 +31,7 @@ buildscript {
 
         // Add the dependency for the Crashlytics Gradle plugin
         classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.9'
-        classpath 'com.android.tools.build:gradle:7.2.2'
+        classpath "com.android.tools.build:gradle:7.0.2"
 
         //navargs
         classpath("androidx.navigation:navigation-safe-args-gradle-plugin:2.5.3")

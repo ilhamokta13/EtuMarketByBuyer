@@ -22,6 +22,8 @@ data class DataRegister(
     val role: String? = null,
     @field:SerializedName("telp")
     val telp: String? = null,
+    @field:SerializedName("shopName")
+    val shopName: String? = null,
     @field:SerializedName("__v")
     val v: Int? = null
 )

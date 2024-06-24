@@ -2,7 +2,6 @@ package com.ilham.etumarketbybuyer
 
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
@@ -20,7 +19,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.ilham.etumarketbybuyer.databinding.FragmentPaymentBinding
 import com.ilham.etumarketbybuyer.model.cart.usercart.Product
-import com.ilham.etumarketbybuyer.model.transaksi.PostTransaction
 import com.ilham.etumarketbybuyer.viewmodel.CartViewModel
 import com.ilham.etumarketbybuyer.viewmodel.PaymentViewModel
 import com.ilham.etumarketbybuyer.viewmodel.ProductViewModel

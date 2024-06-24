@@ -7,9 +7,50 @@
     android:background="@drawable/background"
     tools:context=".HistoryFragment">
 
+    <!-- CardView dengan ImageView, teks "Status Pesanan", dan Spinner -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/filterCardView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/et_searchProduct"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="16dp"
+        app:cardCornerRadius="4dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="8dp">
+
+            <!-- ImageView filter status pesanan -->
+            <ImageView
+                android:id="@+id/iv_filterStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_filter_alt_24" />
+
+            <!-- Teks "Status Pesanan" -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Status Pesanan"
+                android:textSize="14sp"
+                android:textColor="@android:color/black"
+                android:layout_gravity="center_vertical"
+                android:paddingStart="8dp"/>
+
+            <!-- Spinner -->
+            <Spinner
+                android:id="@+id/statusFilterSpinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"/>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
 
     <TextView
-        android:id = "@+id/historyView"
+        android:id="@+id/historyView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
@@ -18,14 +59,14 @@
         android:textColor="@color/black"
         android:textSize="30sp" />
 
+    <!-- EditText for search -->
     <EditText
         android:id="@+id/et_searchProduct"
         android:layout_width="match_parent"
         android:layout_height="45dp"
-        android:layout_below="@id/historyView"
-        android:layout_marginTop="20dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="75dp"
         android:layout_marginEnd="15dp"
-        android:layout_marginBottom="12dp"
         android:background="@color/white"
         android:drawableEnd="@drawable/ic_baseline_search_24"
         android:fontFamily="@font/nunitosemibold"
@@ -36,14 +77,14 @@
         android:paddingEnd="20dp"
         android:textSize="15sp" />
 
-
-
-
+    <!-- RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_listHistory"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/et_searchProduct"
-        android:layout_marginTop="20dp" />
+        android:layout_below="@id/filterCardView"
+        android:layout_marginTop="20dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp" />
 
 </RelativeLayout>
