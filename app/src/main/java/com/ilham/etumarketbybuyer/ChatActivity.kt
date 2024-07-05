@@ -89,8 +89,7 @@ class ChatActivity : AppCompatActivity(),OnMapReadyCallback {
         locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         productVm = ViewModelProvider(this).get(ProductViewModel::class.java)
 
-        val mapFragment = supportFragmentManager.findFragmentById(R.id.map_fragment) as SupportMapFragment
-        mapFragment.getMapAsync(this)
+
 
 
         binding.chatRecyclerView.layoutManager =
@@ -103,6 +102,8 @@ class ChatActivity : AppCompatActivity(),OnMapReadyCallback {
         var intent = intent
         var userId = intent.getStringExtra("userId")
         var userName = intent.getStringExtra("fullname")
+
+
 
         Log.d("Username", "Username benar $userName")
         Log.d("userId", "Id benar $userId")
@@ -139,9 +140,7 @@ class ChatActivity : AppCompatActivity(),OnMapReadyCallback {
 
         readMessage(firebaseUser!!.uid, userId)
 
-        binding.btnSendLocation.setOnClickListener {
-            getLocation()
-        }
+
 
 
     }
@@ -302,10 +301,18 @@ class ChatActivity : AppCompatActivity(),OnMapReadyCallback {
         var hashMap: HashMap<String, String> = HashMap()
         hashMap.put("senderId", senderId)
         hashMap.put("receiverId", receiverId)
+
+        hashMap.put("senderId", senderId)
+        hashMap.put("receiverId", receiverId)
         hashMap.put("message", message)
+
+        Log.d("ReceiverIdTerkirim", "recevIdTerkirim : $receiverId")
+        Log.d("SenderIdTerkirim", "senderIdTerkirim : $senderId")
+
+
         //Program membuat sebuah objek Chat dengan parameter yang diberikan. Objek ini mencakup ID pengirim, ID penerima, pesan, URL gambar (jika ada),
         // serta koordinat latitude dan longitude (jika ada).
-        val chat = Chat(senderId, receiverId, message, imageUrl, latitude, longitude)
+        val chat = Chat(senderId, receiverId,  message, imageUrl, latitude, longitude)
         //Program menambahkan pesan ke dalam node "Chat" di Firebase Realtime Database. Metode push() digunakan untuk membuat node baru dengan ID unik di bawah "Chat", dan
         // setValue(chat) digunakan untuk menyimpan objek Chat tersebut di node baru ini.
 

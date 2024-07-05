@@ -20,11 +20,7 @@
         android:icon="@drawable/ic_baseline_person_24"
         android:enabled="true"
         android:title="Profile" />
-    <item
-        android:id="@+id/userFragment"
-        android:enabled="true"
-        android:icon="@drawable/ic_baseline_chat_24"
-        android:title="Chat" />
+
 
 
 </menu>

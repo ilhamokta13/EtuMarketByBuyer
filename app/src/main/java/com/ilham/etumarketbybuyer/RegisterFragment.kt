@@ -53,10 +53,6 @@ class RegisterFragment : Fragment() {
 
         formTitle(hintTitle)
 
-
-
-
-
         binding.ivBack.setOnClickListener {
             Navigation.findNavController(binding.root)
                 .navigate(R.id.action_registerFragment_to_loginFragment)
@@ -74,37 +70,22 @@ class RegisterFragment : Fragment() {
             val telepon = binding.etPhoneRegister.text.toString()
             val shopName = binding.etShopname.text.toString()
 
-
             if (username.isEmpty() || email.isEmpty() || pass.isEmpty() || telepon.isEmpty() || role.isEmpty()) {
                 Toast.makeText(requireContext(), "Please fill all the field", Toast.LENGTH_SHORT)
                     .show()
-
             } else {
-                checkIfUsernameExists(username, email, pass, telepon, role, shopName)
-//                userVm.postregist(username, email, pass, telepon, role, shopName)
-//                register(shopName, email, pass)
-//                userVm.responseregister.observe(viewLifecycleOwner) {
-//                    if (it.message == "Register success") {
-//                        Toast.makeText(requireContext(), "${it.message}", Toast.LENGTH_SHORT).show()
-//
-//                        val sharedPref = pref.edit()
-//                        sharedPref.putString("email", email)
-//                        sharedPref.putString("telephone", telepon)
-//                        sharedPref.putString("fullname", username)
-//                        sharedPref.putString("password", pass)
-//                        //sharedPref.putString("idbuyer", it.data!!._id)
-//                        sharedPref.apply()
-//
-//                        findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
-//                        Toast.makeText(context, "Berhasil Registrasi", Toast.LENGTH_SHORT)
-//                            .show()
-//                    } else {
-//                        Toast.makeText(context, "Regis tidak berhasil", Toast.LENGTH_SHORT).show()
-//
-//                    }
-//
-//                }
-
+                firebaseAuth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        val user: FirebaseUser? = firebaseAuth.currentUser
+                        val userId: String = user!!.uid
+                        databaseReference =
+                            FirebaseDatabase.getInstance().getReference("Users").child(userId)
+                        Log.d("Uid", "print:$userId")
+                        checkIfUsernameExists(userId, username, email, pass, telepon, role, shopName)
+                    } else {
+                        Toast.makeText(requireContext(), "Registration failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
         }
 
@@ -114,76 +95,66 @@ class RegisterFragment : Fragment() {
     //Fungsi ini menerima tiga parameter: name (nama lengkap pengguna), user (email pengguna), dan pass (kata sandi pengguna)
 
 
-    private fun checkIfUsernameExists(username: String, email: String, pass: String, telepon: String, role: String, shopName: String) {
+
+    private fun checkIfUsernameExists(userId: String, username: String, email: String, pass: String, telepon: String, role: String, shopName: String) {
         val ref = FirebaseDatabase.getInstance().getReference("Users")
-        ref.orderByChild("fullname").equalTo(username).addListenerForSingleValueEvent(object :
-            ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.exists()) {
-                    Toast.makeText(requireContext(), "Username already exists. Please choose another one.", Toast.LENGTH_SHORT).show()
-                } else {
-                    userVm.postregist(username, email, pass, telepon, role, shopName)
-                    register(shopName, email, pass)
-                    userVm.responseregister.observe(viewLifecycleOwner) {
-                        if (it.message == "Register success") {
-                            Toast.makeText(requireContext(), "${it.message}", Toast.LENGTH_SHORT).show()
-                            val sharedPref = pref.edit()
-                            sharedPref.putString("email", email)
-                            sharedPref.putString("telephone", telepon)
-                            sharedPref.putString("fullname", username)
-                            sharedPref.putString("password", pass)
-                            sharedPref.apply()
-                            findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
-                            Toast.makeText(context, "Berhasil Registrasi", Toast.LENGTH_SHORT)
-                                .show()
-                        } else {
-                            Toast.makeText(context, "Regis tidak berhasil", Toast.LENGTH_SHORT).show()
+        ref.orderByChild("fullname").equalTo(username)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()) {
+                        Toast.makeText(
+                            requireContext(),
+                            "Username already exists. Please choose another one.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        val userMap = HashMap<String, Any>()
+                        userMap.put("userId", userId)
+                        userMap.put("fullname", username)
+                        userMap.put("profileImage", "")
+
+                        ref.child(userId).setValue(userMap).addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                userVm.postregist(userId, username, email, pass, telepon, role, shopName)
+                                userVm.responseregister.observe(viewLifecycleOwner) {
+                                    if (it.message == "Register success") {
+                                        Toast.makeText(
+                                            requireContext(),
+                                            "${it.message}",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        val sharedPref = pref.edit()
+                                        sharedPref.putString("email", email)
+                                        sharedPref.putString("telephone", telepon)
+                                        sharedPref.putString("fullname", username)
+                                        sharedPref.putString("password", pass)
+                                        sharedPref.apply()
+                                        findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
+                                        Toast.makeText(context, "Berhasil Registrasi", Toast.LENGTH_SHORT)
+                                            .show()
+                                    } else {
+                                        Toast.makeText(context, "Regis tidak berhasil", Toast.LENGTH_SHORT)
+                                            .show()
+                                    }
+                                }
+                            } else {
+                                Toast.makeText(requireContext(), "Failed to save user: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                            }
                         }
                     }
                 }
-            }
 
-            override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(requireContext(), "Error: ${error.message}", Toast.LENGTH_SHORT).show()
-            }
-        })
-    }
-
-    private fun register(name: String, user: String, pass: String) {
-        //Membuat pengguna baru dengan email dan kata sandi
-        firebaseAuth.createUserWithEmailAndPassword(user, pass).addOnCompleteListener {
-            if (it.isSuccessful) {
-                //variabel user menyimpan pengguna yang saat ini sedang login, dan userId menyimpan UID (User ID) dari pengguna tersebut
-                val user: FirebaseUser? = firebaseAuth.currentUser
-                val userId: String = user!!.uid
-                //menginisialisasi databaseReference ke lokasi di Firebase Realtime Database di mana data pengguna baru akan disimpan, yaitu di bawah node "Users" dengan userId sebagai child
-                databaseReference =
-                    FirebaseDatabase.getInstance().getReference("Users").child(userId)
-
-
-                //Membuat HashMap untuk menyimpan data pengguna
-                val hashMap: HashMap<String, String> = HashMap()
-                hashMap.put("userId", userId)
-                hashMap.put("fullname", name)
-                hashMap.put("profileImage", "")
-                //setValue digunakan untuk menyimpan HashMap ke database di lokasi yang ditentukan oleh databaseReference. Jika penyimpanan data berhasil,
-                // beberapa elemen UI dibersihkan, seperti mengosongkan teks dari beberapa EditText.
-                databaseReference.setValue(hashMap).addOnCompleteListener {
-                    if (it.isSuccessful) {
-                        //open home activity
-                        binding.etNamaRegister.setText(" ")
-                        binding.etEmailRegister.setText("")
-                        binding.etEmailPasswordRegister.setText("")
-
-//                        findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
-
-                    }
+                override fun onCancelled(error: DatabaseError) {
+                    Toast.makeText(requireContext(), "Error: ${error.message}", Toast.LENGTH_SHORT)
+                        .show()
                 }
-            }
-        }
+            })
     }
 
-   // Fungsi ini bernama formTitle dan menerima satu parameter yaitu hintTitle, yang merupakan sebuah array string
+
+
+
+    // Fungsi ini bernama formTitle dan menerima satu parameter yaitu hintTitle, yang merupakan sebuah array string
 
     private fun formTitle(hintTitle: Array<String>) {
         binding.etRole.apply {

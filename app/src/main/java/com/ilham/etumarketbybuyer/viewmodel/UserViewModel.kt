@@ -30,8 +30,8 @@ class UserViewModel @Inject constructor(private val api : ApiService, ) : ViewMo
     private val _responselogin : MutableLiveData<ResponseLogin> = MutableLiveData()
     val responselogin : LiveData<ResponseLogin> = _responselogin
 
-    fun postregist(fullName : String, email : String, password : String, telp : String, role : String,shopName: String){
-        api.register(fullName, email, password, telp, role,shopName).enqueue(object :
+    fun postregist(userId: String, fullName : String, email : String, password : String, telp : String, role : String,shopName: String){
+        api.register(userId,fullName, email, password, telp, role,shopName).enqueue(object :
             Callback<ResponseRegister> {
             override fun onResponse(
                 call: Call<ResponseRegister>,

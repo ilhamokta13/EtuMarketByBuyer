@@ -10,6 +10,8 @@ data class ResponseRegister(
 )
 
 data class DataRegister(
+    @field:SerializedName("userId")
+    val userId: String? = null,
     @field:SerializedName("email")
     val email: String? = null,
     @field:SerializedName("fullName")

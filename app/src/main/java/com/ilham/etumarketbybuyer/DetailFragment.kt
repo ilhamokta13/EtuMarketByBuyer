@@ -110,9 +110,13 @@ class DetailFragment : Fragment(), OnMapReadyCallback {
 //        val getId = pref.getString("id", " ")
 
         val getId = getData.id
+
+
+
         //Memanggil fungsi getproductperid di ProductViewModel untuk mendapatkan detail produk berdasarkan ID
         // dan mengamati perubahan data detail produk dengan observeDetailProduct.
         productVm.getproductperid(getId)
+
 
         observeDetailProduct()
 
@@ -151,41 +155,19 @@ class DetailFragment : Fragment(), OnMapReadyCallback {
         }
 
         binding.chatpenjual.setOnClickListener {
-            val firebase: FirebaseUser = FirebaseAuth.getInstance().currentUser!!
-
-            var userid = firebase.uid
-            FirebaseMessaging.getInstance().subscribeToTopic("/topics/$userid")
-            val databaseReference: DatabaseReference =
-                FirebaseDatabase.getInstance().getReference("Users")
-
-            val user = Firebase.auth.currentUser
-            user?.let {
-                // Name, email address, and profile photo Url
-                val name = it.displayName
-                val email = it.email
-                val photoUrl = it.photoUrl
-
-                // Check if user's email is verified
-                val emailVerified = it.isEmailVerified
-
-                // The user's ID, unique to the Firebase project. Do NOT use this value to
-                // authenticate with your backend server, if you have one. Use
-                // FirebaseUser.getIdToken() instead.
-//                val uid = it.uid
-
-                val hashMap: HashMap<String, String> = HashMap()
-                hashMap.get("fullname")
-
+            productVm.dataproductperid.observe(viewLifecycleOwner){detailproduct->
+                val userid = detailproduct.data.sellerID.userId
+                val name = detailproduct.data.sellerID.fullName
                 val intent = Intent(context, ChatActivity::class.java)
                 intent.putExtra("userId", userid)
                 intent.putExtra("fullname", name)
-
                 Log.d("Usernamerek", "Usernamenya benar $name")
                 Log.d("userIdrek", "Idnya benar $userid")
                 startActivity(intent)
-
-
             }
+
+
+
 
 
         }
@@ -246,6 +228,9 @@ class DetailFragment : Fragment(), OnMapReadyCallback {
                     binding.tvCategory.text = detailproduct.data.category
                     binding.tvRelease.text = detailproduct.data.releaseDate
                     binding.tvNamatoko.text = detailproduct.data.sellerID.shopName
+                    val IDPembeli = detailproduct.data.userId
+//                    val sellerID = detailproduct.data.sellerID.id
+                    Log.d("SellerId", "yaitu : $IDPembeli")
                     binding.tvPemilikToko.text = detailproduct.data.sellerID.fullName
                     binding.tvStock.text = detailproduct.data.stock.toString()
 
